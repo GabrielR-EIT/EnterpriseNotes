@@ -7,6 +7,9 @@ import (
 	"strconv"
 	"strings"
 
+	_ "github.com/YZakizon/geeksbeginner/golang-gin-template/src/web"
+
+	_ "github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
 
@@ -36,11 +39,11 @@ type Association struct {
 }
 
 // Create Maps
-var patterns = map[string]string{`[a-zA-z]+`: "A sentence with a given prefix and/or suffix",
+var Patterns = map[string]string{`[a-zA-z]+`: "A sentence with a given prefix and/or suffix",
 	`[0-9\W]`: "A phone number with a given area code and optionally a consecutive sequence of numbers that are part of that number",
-	`@{1}`:    "A phone number with a given area code and optionally a consecutive sequence of numbers that are part of that number",
-	`meeting|minutes|agenda|action|attendees|apologies{3,}`, "Text that contains at least three of the following case-insensitive words: meeting, minutes, agenda, action, attendees, apologies",
-	`[A-Z]{3,}`, "A word in all capitals of three characters or more"}
+	`@{1}`:    "An email address on a domain that is only partially provided",
+	`meeting|minutes|agenda|action|attendees|apologies{3,}`: "Text that contains at least three of the following case-insensitive words: meeting, minutes, agenda, action, attendees, apologies",
+	`[A-Z]{3,}`: "A word in all capitals of three characters or more"}
 
 // Create Slices
 var Users []User
@@ -394,18 +397,18 @@ func selectPattern() string {
 		// 	return pattern
 		case 1, 2, 3, 4, 5:
 			i := 0
-			for k, v := range patterns {
+			for k, v := range Patterns {
 				i++
 				if i == inputNum {
 					var inputStr string
-					pattern := patterns[k]
-					patternDesc := patterns[v]
+					pattern := Patterns[k]
+					patternDesc := Patterns[v]
 					fmt.Printf("\n\nPlease enter a string that matches the pattern: %v", patternDesc)
 					fmt.Scanln(inputStr)
 
 					// Check for erroneous value
 					switch isValid, returnMsg := validatePattern(pattern, inputStr); {
-					case isValid == true:
+					case isValid:
 						pattern = inputStr
 						return pattern
 					default:
@@ -451,7 +454,8 @@ func selectOption() {
 
 // --- Main ---//
 func main() {
+	go fmt.Println("Test")
 	fmt.Print(CreateDB())
 	fmt.Print(CreateTables())
-	//selectOption()
+	selectOption()
 }
