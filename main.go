@@ -457,5 +457,6 @@ func main() {
 	go fmt.Println("Test")
 	fmt.Print(CreateDB())
 	fmt.Print(CreateTables())
+	fmt.Print(PopulateTables())
 	selectOption()
 }
