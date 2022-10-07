@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	_ "github.com/YZakizon/geeksbeginner/golang-gin-template/src/web"
+	//_ "github.com/YZakizon/geeksbeginner/golang-gin-template/src/web"
 
 	_ "github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -15,27 +15,27 @@ import (
 
 // Create Structs
 type User struct {
-	ID            int
-	Name          string
-	Read_Setting  bool
-	Write_Setting bool
+	ID            int    `json:"user_id"`
+	Name          string `json:"name"`
+	Read_Setting  bool   `json:"read_setting"`
+	Write_Setting bool   `json:"write_setting"`
 }
 
 type Note struct {
-	ID              int
-	Name            string
-	Text            string
-	Completion_Time string
-	Status          string
-	Delegation      string
-	Shared_Users    []string
+	ID              int      `json:"note_id"`
+	Name            string   `json:"name"`
+	Text            string   `json:"text"`
+	Completion_Time string   `json:"completion_date"`
+	Status          string   `json:"status"`
+	Delegation      string   `json:"delegation"`
+	Shared_Users    []string `json:"shared_users"`
 }
 
 type Association struct {
-	ID         int
-	userID     int
-	noteID     int
-	permission string
+	ID         int    `json:"association_id"`
+	userID     int    `json:"user_id"`
+	noteID     int    `json:"note_id"`
+	permission string `json:"permission"`
 }
 
 // Create Maps
@@ -351,7 +351,7 @@ func analyseNote(input string, note *Note) (int, string) {
 // Select Pattern Function
 func selectPattern() string {
 	pattern := ""
-	for optionSelect {
+	if optionSelect {
 		var inputNum int
 		println("Please select a pattern option:\n\n1. A sentence with a given prefix and/or suffix\n2. A phone number with a given area code and optionally a consecutive sequence of numbers that are part of that number\n3. An email address on a domain that is only partially provided\n4. Text that contains at least three of the following case-insensitive words: meeting, minutes, agenda, action, attendees, apologies\n5. A word in all capitals of three characters or more\nOr enter 'r' to return.")
 		fmt.Scanln(inputNum)
@@ -426,7 +426,7 @@ func selectPattern() string {
 
 // Select Option Function
 func selectOption() {
-	for optionSelect {
+	if optionSelect {
 		input := ""
 		println("Please select an option:\n\n1. Users\n2. Notes")
 		fmt.Scanln(input)
@@ -447,7 +447,7 @@ func selectOption() {
 				return
 			}
 		default:
-			continue
+			return
 		}
 	}
 }

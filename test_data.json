@@ -1,0 +1,58 @@
+{
+    "users": [
+        {"user_id":0,"name":"Elliot Alderson","read_setting":"","write_setting":""},
+		{"user_id":1,"name":"Thomas Anderson","read_setting":"","write_setting":""},
+		{"user_id":2,"name":"Lisbeth Salander","read_setting":"","write_setting":""},
+		{"user_id":3,"name":"Matt Miller","read_setting":"","write_setting":""},
+		{"user_id":4,"name":"Futaba Sakura","read_setting":"","write_setting":""},
+		{"user_id":5,"name":"Kinzie Kensington","read_setting":"","write_setting":""}
+    ],
+    "notes": [{
+        "note_id": 0,
+        "name": "Meeting Agenda",
+        "text": "This is the agenda for the meeting. The meeting has been agendered.",
+        "completion_date": "7/10/22",
+        "status": "",
+        "delegation": "",
+        "shared_users": ""
+    }, {
+        "note_id": 1,
+        "name": "Phone Numbers",
+        "text": "06-358-8588, 06-833-9500, 09-368-4818, 0800-994-263",
+        "completion_date": "7/10/22",
+        "status": "",
+        "delegation": "",
+        "shared_users": ""
+    }, {
+        "note_id": 2,
+        "name": "Top 5 Action Movies",
+        "text": "5. Fast Five (2011), 4. Fantastic Four (2005), 3. Spy Kids 3-D (2003), 2. Speed 2 (1997), 1. The One (2001)",
+        "completion_date": "7/10/22",
+        "status": "",
+        "delegation": "",
+        "shared_users": ""
+    }, {
+        "note_id": 3,
+        "name": "HOW TO TURN OFF CAPS LOCK",
+        "text": "MY APOLOGIES BUT I NEED SOMEONE TO HELP ME TURN OFF THE CAPS lock - oh I fixed it, never mind.",
+        "completion_date": "7/10/22",
+        "status": "",
+        "delegation": "",
+        "shared_users": ""
+    }, {
+        "note_id": 4,
+        "name": "My Favourite Email Addresses from the Last 10 Minutes",
+        "text": "websales@pbtech.co.nz, online.admin@nz.harveynorman.com, support@computerlounge.co.nz",
+        "completion_date": "7/10/22",
+        "status": "",
+        "delegation": "",
+        "shared_users": ""
+    }],
+	"associations": [
+        {"association_id":0,"user_ID":2,"note_ID":0,"permission":""},
+		{"association_id":1,"user_ID":0,"note_ID":1,"permission":""},
+		{"association_id":2,"user_ID":1,"note_ID":2,"permission":""},
+		{"association_id":3,"user_ID":4,"note_ID":3,"permission":""},
+		{"association_id":4,"user_ID":3,"note_ID":4,"permission":""}
+    ]
+}

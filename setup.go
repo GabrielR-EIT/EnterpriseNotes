@@ -2,17 +2,27 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
 )
 
 const (
 	host     = "localhost"
 	port     = 5432
 	user     = "postgres"
-	password = "password"
+	password = "postgres"
 	dbname   = ""
 )
+
+// Create Struct for Test Data
+type Data struct {
+	Users        []User        `json:"users"`
+	Notes        []Note        `json:"notes"`
+	Associations []Association `json:"associations"`
+}
 
 func CreateDB() string {
 	var returnMsg string
@@ -121,6 +131,88 @@ func CreateTables() string {
 		return returnMsg
 	}
 	returnMsg += "The 'associations' table was created successfully.\n"
+
+	return returnMsg
+}
+
+func PopulateTables() string {
+	var returnMsg string
+
+	// Open the JSON Test Data
+	jsonFile, err := os.Open("test_data.json")
+	if err != nil {
+		returnMsg += "An error occurred while reading the JSON file!"
+		return returnMsg
+	}
+	returnMsg += "Successfully opened the JSON file!"
+	defer jsonFile.Close()
+
+	// Unmarshal the JSON Test Data
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+	data := Data{}
+	json.Unmarshal([]byte(byteValue), &data)
+
+	// Add the Test Data to Arrays
+	for i := 0; i < len(data.Users); i++ {
+		Users = append(Users, data.Users...)
+	}
+	for i := 0; i < len(data.Notes); i++ {
+		Notes = append(Notes, data.Notes...)
+	}
+	for i := 0; i < len(data.Associations); i++ {
+		Associations = append(Associations, data.Associations...)
+	}
+
+	// Connect to the database
+	// const dbname = "enterprisenotes"
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+
+	// Ping the database for connectivity
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+	err = db.Ping()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Populate the users table
+	for _, user := range Users {
+		sqlQuery := fmt.Sprintf(`INSERT INTO users (%v, %v, %v, %v)`, user.ID, user.Name, user.Read_Setting, user.Write_Setting)
+		_, err = db.Exec(sqlQuery)
+		if err != nil {
+			log.Fatal(err)
+			returnMsg += "An error occurred when populating the 'users' table.\n"
+			return returnMsg
+		}
+	}
+	returnMsg += "The 'users' table was populated successfully.\n"
+
+	// Populate the notes table
+	for _, note := range Notes {
+		sqlQuery := fmt.Sprintf(`INSERT INTO notes (%v, %v, %v, %v, %v, %v, %v)`, note.ID, note.Name, note.Text, note.Completion_Time, note.Status, note.Delegation, note.Shared_Users)
+		_, err = db.Exec(sqlQuery)
+		if err != nil {
+			log.Fatal(err)
+			returnMsg += "An error occurred when populating the 'notes' table.\n"
+			return returnMsg
+		}
+	}
+	returnMsg += "The 'notes' table was populated successfully.\n"
+
+	// Create the associations table
+	for _, association := range Associations {
+		sqlQuery := fmt.Sprintf(`INSERT INTO associations (%v, %v, %v, %v)`, association.ID, association.userID, association.noteID, association.permission)
+		_, err = db.Exec(sqlQuery)
+		if err != nil {
+			log.Fatal(err)
+			returnMsg += "An error occurred when populating the 'associations' table.\n"
+			return returnMsg
+		}
+	}
+	returnMsg += "The 'associations' table was populated successfully.\n"
 
 	return returnMsg
 }
