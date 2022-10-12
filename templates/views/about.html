@@ -1,0 +1,59 @@
+{{ define "views/about.html" }}
+<!--Embed the header.html template at this location-->
+{{ template "layouts/header.html" .}}
+
+<header class="masthead text-white text-center">
+  <section class="features-icons bg-light text-center">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4">
+          <div class="features-icons-item mx-auto mb-0 mb-lg-3">
+            <div class="features-icons-icon d-flex">
+              <i class="icon-check m-auto text-primary"></i>
+            </div>
+            <!-- Read/Edit a Note Form -->
+            <h3>Read/Edit a User</h3>
+            <form>
+              <div class="form-group">
+                <label for="readUserSelect">Select a User.</label>
+              <!-- Note: Include users in list for selection -->
+                <select class="form-control">
+                <option></option>
+              </div>
+              <div class="form-group">
+                <label for="editPropertySelect">Select a Property to Edit.</label>
+              <select class="form-control">
+                <option>Name</option>
+                <option>Read_Setting</option>
+                <option>Write_Setting</option>
+                <option>[DELETE USER]</option>
+              </div>
+              <div class="form-group">
+                <label for="editPropertyInput">Enter new property.</label>
+                <!-- Note: Make the input type differ depending on the chosen property -->
+                <div class="form-group mx-sm-3 mb-2">
+                  <label for="editPropertyInput" class="sr-only">Text</label>
+                  <input type="text" class="form-control" id="editPropertyInput" placeholder="Text">
+                </div>
+                <button type="submit" class="btn btn-primary mb-2">Confirm Change</button>
+                </div>
+            </form>
+            </div>
+        </div>
+      </div>
+      <div class="container">
+        <!-- Results Output -->
+        <!-- Note: Make the output of each query appear in this area -->
+        <h3>Results</h3>
+        <form>
+          <div class="form-group">
+            <textarea class="form-control rounded-0" id="resultsTextArea" rows="10"></textarea>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+  </header>
+<!--Embed the footer.html template at this location-->
+{{ template "layouts/footer.html" .}}
+{{ end }}

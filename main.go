@@ -7,9 +7,6 @@ import (
 	"strconv"
 	"strings"
 
-	//_ "github.com/YZakizon/geeksbeginner/golang-gin-template/src/web"
-
-	_ "github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
 
@@ -33,9 +30,9 @@ type Note struct {
 
 type Association struct {
 	ID         int    `json:"association_id"`
-	userID     int    `json:"user_id"`
-	noteID     int    `json:"note_id"`
-	permission string `json:"permission"`
+	UserID     int    `json:"user_id"`
+	NoteID     int    `json:"note_id"`
+	Permission string `json:"permission"`
 }
 
 // Create Maps
@@ -454,7 +451,8 @@ func selectOption() {
 
 // --- Main ---//
 func main() {
-	go fmt.Println("Test")
+	go StartServer()
+	go fmt.Print(InitSonyFlake())
 	fmt.Print(CreateDB())
 	fmt.Print(CreateTables())
 	fmt.Print(PopulateTables())
