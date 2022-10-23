@@ -2,6 +2,7 @@ package main
 
 import (
 	"enterprise-notes/controller"
+	_ "html/template"
 	"log"
 	"net/http"
 

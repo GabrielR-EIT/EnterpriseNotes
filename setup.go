@@ -84,7 +84,7 @@ func CreateTables() string {
 	// Create the users table
 	sqlQuery := `DROP TABLE IF EXISTS users;
 	CREATE TABLE users (
-		userID INT PRIMARY KEY, 
+		userID INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 
 		userName VARCHAR(100), 
 		userReadSetting BOOL, 
 		userWriteSetting BOOL
@@ -100,7 +100,7 @@ func CreateTables() string {
 	// Create the notes table
 	sqlQuery = `DROP TABLE IF EXISTS notes;
 	CREATE TABLE notes (
-		noteID INT PRIMARY KEY, 
+		noteID INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 
 		noteName VARCHAR(100), 
 		noteText TEXT, 
 		noteCompletionTime timestamp,
@@ -119,7 +119,7 @@ func CreateTables() string {
 	// Create the associations table
 	sqlQuery = `DROP TABLE IF EXISTS associations;
 	CREATE TABLE associations (
-		associationID INT PRIMARY KEY, 
+		associationID INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 
 		userID INT, 
 		noteID INT, 
 		associationPerm VARCHAR(20),
@@ -204,20 +204,21 @@ func PopulateTables() string {
 	// }
 	// returnMsg += "The 'users' table was populated successfully.\n"
 
-	var newID int
-	newID = 0
+	// var newID int
+	// newID = 0
 
 	// Populate the users table (ALT)
 	for _, user := range Users {
-		newID++
-		sqlQuery = fmt.Sprintf(`INSERT INTO users VALUES (%d, '%s', %t, %t)`, newID, user.Name, user.Read_Setting, user.Write_Setting)
-		fmt.Println(sqlQuery)
-		_, err = db.Exec(sqlQuery)
-		if err != nil {
-			log.Fatal(err)
-			returnMsg += "An error occurred when populating the 'users' table.\n"
-			return returnMsg
-		}
+		//newID++
+		createUser(user.Name, user.Read_Setting, user.Write_Setting)
+		// sqlQuery = fmt.Sprintf(`INSERT INTO users (userName, userReadSetting, userWriteSetting) VALUES ('%s', %t, %t)`, user.Name, user.Read_Setting, user.Write_Setting)
+		// fmt.Println(sqlQuery)
+		// _, err = db.Exec(sqlQuery)
+		// if err != nil {
+		// 	log.Fatal(err)
+		// 	returnMsg += "An error occurred when populating the 'users' table.\n"
+		// 	return returnMsg
+		// }
 	}
 	returnMsg += "The 'users' table was populated successfully.\n"
 
@@ -234,19 +235,20 @@ func PopulateTables() string {
 	// }
 	// returnMsg += "The 'notes' table was populated successfully.\n"
 
-	newID = 0
+	//newID = 0
 
 	// Populate the notes table (ALT)
 	for _, note := range Notes {
-		newID++
-		sqlQuery := fmt.Sprintf(`INSERT INTO notes VALUES (%d, '%s', '%s', '%s', '%s', '%s', '%v')`, newID, note.Name, note.Text, note.Completion_Time, note.Status, note.Delegation, note.Shared_Users)
-		fmt.Println(sqlQuery)
-		_, err = db.Exec(sqlQuery)
-		if err != nil {
-			log.Fatal(err)
-			returnMsg += "An error occurred when populating the 'notes' table.\n"
-			return returnMsg
-		}
+		//newID++
+		createNote(note.Name, note.Text, note.Completion_Time, note.Status, note.Delegation, note.Shared_Users)
+		// sqlQuery := fmt.Sprintf(`INSERT INTO notes (noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers) VALUES ('%s', '%s', '%s', '%s', '%s', '%v')`, note.Name, note.Text, note.Completion_Time, note.Status, note.Delegation, note.Shared_Users)
+		// fmt.Println(sqlQuery)
+		// _, err = db.Exec(sqlQuery)
+		// if err != nil {
+		// 	log.Fatal(err)
+		// 	returnMsg += "An error occurred when populating the 'notes' table.\n"
+		// 	return returnMsg
+		// }
 	}
 	returnMsg += "The 'notes' table was populated successfully.\n"
 
@@ -266,12 +268,12 @@ func PopulateTables() string {
 
 	// return returnMsg
 
-	newID = 0
+	//newID = 0
 
 	// Create the associations table (ALT)
 	for _, association := range Associations {
-		newID++
-		sqlQuery := fmt.Sprintf(`INSERT INTO associations VALUES (%d, %d, %d, '%s')`, newID, association.UserID, association.NoteID, association.Permission)
+		//newID++
+		sqlQuery := fmt.Sprintf(`INSERT INTO associations (userID, noteID, associationPerm) VALUES (%d, %d, '%s')`, association.UserID, association.NoteID, association.Permission)
 		fmt.Println(sqlQuery)
 		_, err = db.Exec(sqlQuery)
 		if err != nil {

@@ -21,3 +21,5 @@ func validatePattern(pattern string, input string) (bool, string) {
 		return isValid, returnMsg
 	}
 }
+
+func validateStatus(input string) {}
