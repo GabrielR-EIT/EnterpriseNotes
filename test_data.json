@@ -1,11 +1,11 @@
 {
     "users": [
-        {"user_id":1,"name":"Elliot Alderson","read_setting":"","write_setting":""},
-		{"user_id":2,"name":"Thomas Anderson","read_setting":"","write_setting":""},
-		{"user_id":3,"name":"Lisbeth Salander","read_setting":"","write_setting":""},
-		{"user_id":4,"name":"Matt Miller","read_setting":"","write_setting":""},
-		{"user_id":5,"name":"Futaba Sakura","read_setting":"","write_setting":""},
-		{"user_id":6,"name":"Kinzie Kensington","read_setting":"","write_setting":""}
+        {"user_id":1,"name":"Elliot Alderson","read_setting":false,"write_setting":false},
+		{"user_id":2,"name":"Thomas Anderson","read_setting":true,"write_setting":true},
+		{"user_id":3,"name":"Lisbeth Salander","read_setting":false,"write_setting":false},
+		{"user_id":4,"name":"Matt Miller","read_setting":true,"write_setting":false},
+		{"user_id":5,"name":"Futaba Sakura","read_setting":true,"write_setting":true},
+		{"user_id":6,"name":"Kinzie Kensington","read_setting":true,"write_setting":true}
     ],
     "notes": [{
         "note_id": 1,
@@ -13,40 +13,40 @@
         "text": "This is the agenda for the meeting. The meeting has been agendered.",
         "completion_date": "7/10/22",
         "status": "",
-        "delegation": "",
-        "shared_users": ""
+        "delegation": 3,
+        "shared_users": [1, 2, 3, 4, 5]
     }, {
         "note_id": 2,
         "name": "Phone Numbers",
         "text": "06-358-8588, 06-833-9500, 09-368-4818, 0800-994-263",
         "completion_date": "7/10/22",
         "status": "",
-        "delegation": "",
-        "shared_users": ""
+        "delegation": 1,
+        "shared_users": [2]
     }, {
         "note_id": 3,
         "name": "Top 5 Action Movies",
         "text": "5. Fast Five (2011), 4. Fantastic Four (2005), 3. Spy Kids 3-D (2003), 2. Speed 2 (1997), 1. The One (2001)",
         "completion_date": "7/10/22",
         "status": "",
-        "delegation": "",
-        "shared_users": ""
+        "delegation": 2,
+        "shared_users": [2, 4]
     }, {
         "note_id": 4,
         "name": "HOW TO TURN OFF CAPS LOCK",
         "text": "MY APOLOGIES BUT I NEED SOMEONE TO HELP ME TURN OFF THE CAPS lock - oh I fixed it, never mind.",
         "completion_date": "7/10/22",
         "status": "",
-        "delegation": "",
-        "shared_users": ""
+        "delegation": 5,
+        "shared_users": [1, 2, 3, 4, 5]
     }, {
         "note_id": 5,
         "name": "My Favourite Email Addresses from the Last 10 Minutes",
         "text": "websales@pbtech.co.nz, online.admin@nz.harveynorman.com, support@computerlounge.co.nz",
         "completion_date": "7/10/22",
         "status": "",
-        "delegation": "",
-        "shared_users": ""
+        "delegation": 4,
+        "shared_users": [4, 2]
     }],
 	"associations": [
         {"association_id":1,"user_id":3,"note_id":1,"permission":""},

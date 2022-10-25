@@ -26,9 +26,9 @@ type Note struct {
 	Completion_Time string `json:"completion_date"`
 	Status          string `json:"status"`
 	//Delegation field should be a User struct
-	Delegation string `json:"delegation"`
+	Delegation int `json:"delegation"`
 	// Shared_Users should be a slice of Users
-	Shared_Users []string `json:"shared_users"`
+	Shared_Users []int `json:"shared_users"`
 }
 
 type Association struct {
@@ -51,7 +51,7 @@ var Notes []Note
 var Associations []Association
 
 // Set Global Variables
-var optionSelect = true
+//var optionSelect = true
 
 // --- Functions ---//
 // Get Index Of Item Function
@@ -259,7 +259,7 @@ func deleteUser(userID int) string {
 }
 
 // Create Note Function
-func createNote(noteName string, noteText string, noteCompletionTime string, noteStatus string, noteDelegation string, noteSharedUsers []string) string {
+func createNote(noteName string, noteText string, noteCompletionTime string, noteStatus string, noteDelegation int, noteSharedUsers []int) string {
 	returnMsg := ""
 	// note_name, note_text, note_time, note_status, note_delegation, note_users := "", "", "", "", "", []string{}
 	// fmt.Scanln(&note_name)
@@ -348,7 +348,7 @@ func readNote(noteID int) string {
 }
 
 // Update Note Function
-func updateNote(noteID int, noteName string, noteText string, noteCompletionTime string, noteStatus string, noteDelegation string, noteSharedUsers []string) string {
+func updateNote(noteID int, noteName string, noteText string, noteCompletionTime string, noteStatus string, noteDelegation int, noteSharedUsers []int) string {
 	returnMsg := ""
 
 	// Connect to the database
@@ -573,112 +573,113 @@ func analyseNote(inputPattern string, noteID int) (int, string) {
 }
 
 // Select Pattern Function
-func selectPattern() string {
-	pattern := ""
-	if optionSelect {
-		var inputNum int
-		println("Please select a pattern option:\n\n1. A sentence with a given prefix and/or suffix\n2. A phone number with a given area code and optionally a consecutive sequence of numbers that are part of that number\n3. An email address on a domain that is only partially provided\n4. Text that contains at least three of the following case-insensitive words: meeting, minutes, agenda, action, attendees, apologies\n5. A word in all capitals of three characters or more\nOr enter 'r' to return.")
-		fmt.Scanln(inputNum)
-		switch inputNum {
-		// case "1":
-		// 	println("\n\nPlease enter a string that matches the pattern: A sentence with a given prefix and/or suffix")
-		// 	fmt.Scanln(input)
-		// 	pattern = input
-		// 	return pattern
-		// case "2":
-		// 	pattern := `[0-9\W]`
-		// 	println("\n\nPlease enter a string that matches the pattern: A phone number with a given area code and optionally a consecutive sequence of numbers that are part of that number")
-		// 	fmt.Scanln(input)
+// func selectPattern() string {
+// 	pattern := ""
+// 	if optionSelect {
+// 		var inputNum int
+// 		println("Please select a pattern option:\n\n1. A sentence with a given prefix and/or suffix\n2. A phone number with a given area code and optionally a consecutive sequence of numbers that are part of that number\n3. An email address on a domain that is only partially provided\n4. Text that contains at least three of the following case-insensitive words: meeting, minutes, agenda, action, attendees, apologies\n5. A word in all capitals of three characters or more\nOr enter 'r' to return.")
+// 		fmt.Scanln(inputNum)
+// 		switch inputNum {
+// case "1":
+// 	println("\n\nPlease enter a string that matches the pattern: A sentence with a given prefix and/or suffix")
+// 	fmt.Scanln(input)
+// 	pattern = input
+// 	return pattern
+// case "2":
+// 	pattern := `[0-9\W]`
+// 	println("\n\nPlease enter a string that matches the pattern: A phone number with a given area code and optionally a consecutive sequence of numbers that are part of that number")
+// 	fmt.Scanln(input)
 
-		// 	// Check for erroneous value
-		// 	switch validatePattern(pattern, input).isValid {
-		// 	case true:
-		// 		pattern = input
-		// 		return pattern
-		// 	default:
-		// 		fmt.print(validatePattern(pattern, input).returnMsg)
-		// 	continue
-		// case "3":
-		// 	pattern := `@{1}`
-		// 	println("\n\nPlease enter a string that matches the pattern: An email address on a domain that is only partially provided")
-		// 	fmt.Scanln(input)
-		// 	_, err := regexp.MatchString(`@{1}`, input)
-		// 	pattern = input
-		// 	return pattern
-		// case "4":
-		// 	pattern := `meeting|minutes|agenda|action|attendees|apologies{3,}`
-		// 	println("\n\nPlease enter a string that matches the pattern: Text that contains at least three of the following case-insensitive words: meeting, minutes, agenda, action, attendees, apologies")
-		// 	fmt.Scanln(input)
-		// 	_, err := regexp.MatchString(`meeting|minutes|agenda|action|attendees|apologies{3,}`, input)
-		// 	pattern = input
-		// 	return pattern
-		// case "5":
-		// 	pattern := `[A-Z]{3,}`
-		// 	println("\n\nPlease enter a string that matches the pattern: A word in all capitals of three characters or more")
-		// 	fmt.Scanln(input)
-		// 	_, err := regexp.MatchString(`[A-Z]{3,}`, input)
-		// 	pattern = input
-		// 	return pattern
-		case 1, 2, 3, 4, 5:
-			i := 0
-			for k, v := range Patterns {
-				i++
-				if i == inputNum {
-					var inputStr string
-					pattern := Patterns[k]
-					patternDesc := Patterns[v]
-					fmt.Printf("\n\nPlease enter a string that matches the pattern: %v", patternDesc)
-					fmt.Scanln(inputStr)
+// 	// Check for erroneous value
+// 	switch validatePattern(pattern, input).isValid {
+// 	case true:
+// 		pattern = input
+// 		return pattern
+// 	default:
+// 		fmt.print(validatePattern(pattern, input).returnMsg)
+// 	continue
+// case "3":
+// 	pattern := `@{1}`
+// 	println("\n\nPlease enter a string that matches the pattern: An email address on a domain that is only partially provided")
+// 	fmt.Scanln(input)
+// 	_, err := regexp.MatchString(`@{1}`, input)
+// 	pattern = input
+// 	return pattern
+// case "4":
+// 	pattern := `meeting|minutes|agenda|action|attendees|apologies{3,}`
+// 	println("\n\nPlease enter a string that matches the pattern: Text that contains at least three of the following case-insensitive words: meeting, minutes, agenda, action, attendees, apologies")
+// 	fmt.Scanln(input)
+// 	_, err := regexp.MatchString(`meeting|minutes|agenda|action|attendees|apologies{3,}`, input)
+// 	pattern = input
+// 	return pattern
+// case "5":
+// 	pattern := `[A-Z]{3,}`
+// 	println("\n\nPlease enter a string that matches the pattern: A word in all capitals of three characters or more")
+// 	fmt.Scanln(input)
+// 	_, err := regexp.MatchString(`[A-Z]{3,}`, input)
+// 	pattern = input
+// 	return pattern
+// 		case 1, 2, 3, 4, 5:
+// 			i := 0
+// 			for k, v := range Patterns {
+// 				i++
+// 				if i == inputNum {
+// 					var inputStr string
+// 					pattern := Patterns[k]
+// 					patternDesc := Patterns[v]
+// 					fmt.Printf("\n\nPlease enter a string that matches the pattern: %v", patternDesc)
+// 					fmt.Scanln(inputStr)
 
-					// Check for erroneous value
-					switch isValid, returnMsg := validatePattern(pattern, inputStr); {
-					case isValid:
-						pattern = inputStr
-						return pattern
-					default:
-						fmt.Println(returnMsg)
-						continue
-					}
-				}
-			}
-		default:
-			return ""
-		}
-	}
-	return pattern
-}
+// 					// Check for erroneous value
+// 					switch isValid, returnMsg := validatePattern(pattern, inputStr); {
+// 					case isValid:
+// 						pattern = inputStr
+// 						return pattern
+// 					default:
+// 						fmt.Println(returnMsg)
+// 						continue
+// 					}
+// 				}
+// 			}
+// 		default:
+// 			return ""
+// 		}
+// 	}
+// 	return pattern
+// }
 
 // Select Option Function
-func selectOption() {
-	if optionSelect {
-		input := ""
-		println("Please select an option:\n\n1. Users\n2. Notes")
-		fmt.Scanln(input)
-		switch input {
-		case "1":
-			println("\n\nPlease select an option:\n\n1.Create User\n2.Read User\n3.Update User\n4.Delete User\nOr enter 'r' to return.")
-			fmt.Scanln(input)
-			switch input {
-			case "1":
-				//createUser()
-			case "2":
-				//readUser()
-			case "3":
-				//updateUser()
-			case "4":
-				//deleteUser()
-			default:
-				return
-			}
-		default:
-			return
-		}
-	}
-}
+// func selectOption() {
+// 	if optionSelect {
+// 		input := ""
+// 		println("Please select an option:\n\n1. Users\n2. Notes")
+// 		fmt.Scanln(input)
+// 		switch input {
+// 		case "1":
+// 			println("\n\nPlease select an option:\n\n1.Create User\n2.Read User\n3.Update User\n4.Delete User\nOr enter 'r' to return.")
+// 			fmt.Scanln(input)
+// 			switch input {
+// 			case "1":
+// 				//createUser()
+// 			case "2":
+// 				//readUser()
+// 			case "3":
+// 				//updateUser()
+// 			case "4":
+// 				//deleteUser()
+// 			default:
+// 				return
+// 			}
+// 		default:
+// 			return
+// 		}
+// 	}
+// }
 
 // --- Main ---//
 func main() {
 	go StartServer()
+	//Note: Remove SonyFlake Function
 	//go fmt.Print(InitSonyFlake())
 	fmt.Print(CreateDB())
 	fmt.Print(CreateTables())

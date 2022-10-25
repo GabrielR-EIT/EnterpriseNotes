@@ -56,10 +56,10 @@ func TestCreateNote(t *testing.T) {
 	noteText := "test text"
 	noteCompletionTime := "2022-10-23 00:00:00.000"
 	noteStatus := "completed"
-	noteDelegation := "test delegation"
-	//noteSharedUsers :=
+	noteDelegation := 1
+	noteSharedUsers := []int{6, 1}
 
-	//createNote(noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers)
+	createNote(noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers)
 }
 
 func TestReadNote(t *testing.T) {
@@ -76,14 +76,15 @@ func TestUpdateNote(t *testing.T) {
 	PopulateTables()
 
 	//Create New Note Data
+	noteID := 1
 	noteName := "updated note"
 	noteText := "updated text"
 	noteCompletionTime := "2022-10-24 00:00:00.000"
 	noteStatus := "in-progress"
-	noteDelegation := "updated delegation"
-	//noteSharedUsers :=
+	noteDelegation := 2
+	noteSharedUsers := []int{6, 2}
 
-	updateNote(noteName, noteText, noteCompletionTime, noteStatus, noteDelegation)
+	updateNote(noteID, noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers)
 }
 
 func TestDeleteNote(t *testing.T) {
@@ -99,6 +100,7 @@ func TestFindNote(t *testing.T) {
 	CreateTables()
 	PopulateTables()
 
+	//Note: Test all five patterns
 	findString := "agenda"
 
 	findNote(findString)

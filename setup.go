@@ -24,6 +24,28 @@ type Data struct {
 	Associations []Association `json:"associations"`
 }
 
+// Connect to Database Function
+// func ConnectToDB() string {
+// 	var returnMsg string
+
+// 	// Connect to the database
+// 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s sslmode=disable", host, port, user, password)
+
+// 	// Ping the database for connectivity
+// 	db, err := sql.Open("postgres", psqlInfo)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	//defer db.Close()
+// 	err = db.Ping()
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+
+// 	returnMsg += "A successful PostgreSQL connection was made.\n"
+// 	return returnMsg
+// }
+
 // Create Database Function
 func CreateDB() string {
 	var returnMsg string
