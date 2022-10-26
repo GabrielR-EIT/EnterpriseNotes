@@ -6,7 +6,7 @@ import (
 )
 
 // Declare validStatuses array
-var validStatuses = [6]string{"meeting", "minutes", "agenda", "action", "attendees", "apologies"}
+var validStatuses = [5]string{"none", "in progress", "completed", "cancelled", "delegated"}
 
 func validatePattern(pattern string, input string) (bool, string) {
 	isValid := false

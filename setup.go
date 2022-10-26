@@ -108,8 +108,8 @@ func CreateTables() string {
 	CREATE TABLE users (
 		userID INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 
 		userName VARCHAR(100), 
-		userReadSetting BOOL, 
-		userWriteSetting BOOL
+		userReadSetting BOOL DEFAULT false, 
+		userWriteSetting BOOL DEFAULT false
 	);`
 	_, err = db.Exec(sqlQuery)
 	if err != nil {
@@ -125,8 +125,8 @@ func CreateTables() string {
 		noteID INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 
 		noteName VARCHAR(100), 
 		noteText TEXT, 
-		noteCompletionTime timestamp,
-		noteStatus VARCHAR(20),
+		noteCompletionTime timestamp DEFAULT CURRENT_TIMESTAMP,
+		noteStatus VARCHAR(20) DEFAULT 'none',
 		noteDelegation VARCHAR(20),
 		noteSharedUsers VARCHAR(100)
 	);`

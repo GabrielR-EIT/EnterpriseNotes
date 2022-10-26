@@ -1,9 +1,26 @@
 package main
 
 import (
+	"fmt"
+	"regexp"
 	"testing"
 	_ "testing"
 )
+
+type noteTest struct {
+	input string
+	id    int
+	want  bool
+	count int
+}
+
+var noteTests = []noteTest{
+	noteTest{"agenda", 1, true, 1},
+	noteTest{"06-358-8588", 2, true, 1},
+	noteTest{"Ocean's Eleven", 3, false, 0},
+	noteTest{"APOLOGIES", 4, true, 1},
+	noteTest{"robing7@student.eit.ac.nz", 5, false, 0},
+}
 
 func TestCreateUser(t *testing.T) {
 	//Create Database and Tables for New User Data
@@ -15,7 +32,15 @@ func TestCreateUser(t *testing.T) {
 	userReadSetting := false
 	userWriteSetting := false
 
-	createUser(userName, userReadSetting, userWriteSetting)
+	//Create string variable for regexp function
+	userData := regexp.MustCompile(fmt.Sprintf("%s|%s|%s|", userName, userReadSetting, userWriteSetting))
+
+	got := createUser(userName, userReadSetting, userWriteSetting)
+	want := userData.MatchString(got)
+
+	// if got != want {
+	// 	t.Errorf("Got %v, wanted %v", got, want)
+	// }
 }
 
 func TestReadUser(t *testing.T) {
@@ -23,7 +48,12 @@ func TestReadUser(t *testing.T) {
 	CreateTables()
 	PopulateTables()
 
-	readUser(1)
+	got := readUser(1)
+	//want := strings.Contains(got, fmt.Sprintf("%s", Users[1]))
+
+	if got != want {
+		t.Errorf("Got %v, wanted %v", got, want)
+	}
 }
 
 func TestUpdateUser(t *testing.T) {
@@ -35,7 +65,12 @@ func TestUpdateUser(t *testing.T) {
 	userReadSetting := true
 	userWriteSetting := true
 
-	updateUser(1, userName, userReadSetting, userWriteSetting)
+	got := updateUser(1, userName, userReadSetting, userWriteSetting)
+	//want :=
+
+	if got != want {
+		t.Errorf("Got %v, wanted %v", got, want)
+	}
 }
 
 func TestDeleteUser(t *testing.T) {
@@ -43,7 +78,12 @@ func TestDeleteUser(t *testing.T) {
 	CreateTables()
 	PopulateTables()
 
-	deleteUser(1)
+	got := deleteUser(1)
+	//want :=
+
+	if got != want {
+		t.Errorf("Got %v, wanted %v", got, want)
+	}
 }
 
 func TestCreateNote(t *testing.T) {
@@ -59,7 +99,12 @@ func TestCreateNote(t *testing.T) {
 	noteDelegation := 1
 	noteSharedUsers := []int{6, 1}
 
-	createNote(noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers)
+	got := createNote(noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers)
+	//want :=
+
+	if got != want {
+		t.Errorf("Got %v, wanted %v", got, want)
+	}
 }
 
 func TestReadNote(t *testing.T) {
@@ -67,7 +112,12 @@ func TestReadNote(t *testing.T) {
 	CreateTables()
 	PopulateTables()
 
-	readNote(1)
+	got := readNote(1)
+	//want :=
+
+	if got != want {
+		t.Errorf("Got %v, wanted %v", got, want)
+	}
 }
 
 func TestUpdateNote(t *testing.T) {
@@ -79,12 +129,17 @@ func TestUpdateNote(t *testing.T) {
 	noteID := 1
 	noteName := "updated note"
 	noteText := "updated text"
-	noteCompletionTime := "2022-10-24 00:00:00.000"
+	noteCompletionTime := ""
 	noteStatus := "in-progress"
 	noteDelegation := 2
 	noteSharedUsers := []int{6, 2}
 
-	updateNote(noteID, noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers)
+	got := updateNote(noteID, noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers)
+	//want :=
+
+	if got != want {
+		t.Errorf("Got %v, wanted %v", got, want)
+	}
 }
 
 func TestDeleteNote(t *testing.T) {
@@ -92,7 +147,12 @@ func TestDeleteNote(t *testing.T) {
 	CreateTables()
 	PopulateTables()
 
-	deleteNote(1)
+	got := deleteNote(1)
+	//want :=
+
+	if got != want {
+		t.Errorf("Got %v, wanted %v", got, want)
+	}
 }
 
 func TestFindNote(t *testing.T) {
@@ -101,9 +161,15 @@ func TestFindNote(t *testing.T) {
 	PopulateTables()
 
 	//Note: Test all five patterns
-	findString := "agenda"
+	//findString := "agenda"
 
-	findNote(findString)
+	for _, note := range noteTests {
+		got, _ := findNote(note.input)
+		want := note.want
+		if !got {
+			t.Errorf("Got %t, wanted %t", got, want)
+		}
+	}
 }
 
 func TestAnalyseNote(t *testing.T) {
@@ -111,9 +177,13 @@ func TestAnalyseNote(t *testing.T) {
 	CreateTables()
 	PopulateTables()
 
-	findString := "agenda"
-
-	analyseNote(findString, 1)
+	for _, note := range noteTests {
+		got, _ := analyseNote(note.input, note.id)
+		want := note.count
+		if got != note.count {
+			t.Errorf("Got %t, wanted %t", got, want)
+		}
+	}
 }
 
 func TestMain(t *testing.T) {

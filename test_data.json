@@ -12,7 +12,7 @@
         "name": "Meeting Agenda",
         "text": "This is the agenda for the meeting. The meeting has been agendered.",
         "completion_date": "7/10/22",
-        "status": "",
+        "status": "delegated",
         "delegation": 3,
         "shared_users": [1, 2, 3, 4, 5]
     }, {
@@ -20,7 +20,7 @@
         "name": "Phone Numbers",
         "text": "06-358-8588, 06-833-9500, 09-368-4818, 0800-994-263",
         "completion_date": "7/10/22",
-        "status": "",
+        "status": "completed",
         "delegation": 1,
         "shared_users": [2]
     }, {
@@ -28,7 +28,7 @@
         "name": "Top 5 Action Movies",
         "text": "5. Fast Five (2011), 4. Fantastic Four (2005), 3. Spy Kids 3-D (2003), 2. Speed 2 (1997), 1. The One (2001)",
         "completion_date": "7/10/22",
-        "status": "",
+        "status": "completed",
         "delegation": 2,
         "shared_users": [2, 4]
     }, {
@@ -36,7 +36,7 @@
         "name": "HOW TO TURN OFF CAPS LOCK",
         "text": "MY APOLOGIES BUT I NEED SOMEONE TO HELP ME TURN OFF THE CAPS lock - oh I fixed it, never mind.",
         "completion_date": "7/10/22",
-        "status": "",
+        "status": "cancelled",
         "delegation": 5,
         "shared_users": [1, 2, 3, 4, 5]
     }, {
@@ -44,7 +44,7 @@
         "name": "My Favourite Email Addresses from the Last 10 Minutes",
         "text": "websales@pbtech.co.nz, online.admin@nz.harveynorman.com, support@computerlounge.co.nz",
         "completion_date": "7/10/22",
-        "status": "",
+        "status": "in progress",
         "delegation": 4,
         "shared_users": [4, 2]
     }],

@@ -679,8 +679,6 @@ func analyseNote(inputPattern string, noteID int) (int, string) {
 // --- Main ---//
 func main() {
 	go StartServer()
-	//Note: Remove SonyFlake Function
-	//go fmt.Print(InitSonyFlake())
 	fmt.Print(CreateDB())
 	fmt.Print(CreateTables())
 	fmt.Print(PopulateTables())
