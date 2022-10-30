@@ -28,7 +28,7 @@ type Note struct {
 	//Delegation field should be a User struct
 	Delegation int `json:"delegation"`
 	// Shared_Users should be a slice of Users
-	Shared_Users []int `json:"shared_users"`
+	Shared_Users string `json:"shared_users"`
 }
 
 type Association struct {
@@ -89,18 +89,12 @@ func createUser(userName string, userReadSetting bool, userWriteSetting bool) st
 		log.Fatal(err)
 	}
 
-	sqlQuery := fmt.Sprintf(`INSERT INTO users VALUE (%s, %t, %t);`, userName, userReadSetting, userWriteSetting)
+	sqlQuery := fmt.Sprintf(`INSERT INTO users(userName, userReadSetting, userWriteSetting) VALUES ('%s', %t, %t);`, userName, userReadSetting, userWriteSetting)
 	_, err = db.Exec(sqlQuery)
 	if err != nil {
 		log.Fatal(err)
 		returnMsg += "An error occurred when trying to create the user.\n"
 	}
-
-	// user_name := ""
-	// var user_read_setting, user_write_setting bool
-	// fmt.Scanln(&user_name)
-	// fmt.Scanln(&user_read_setting)
-	// fmt.Scanln(&user_write_setting)
 
 	// Create struct for new user
 	new_user := User{
@@ -163,47 +157,7 @@ func updateUser(userID int, userName string, userReadSetting bool, userWriteSett
 		log.Fatal(err)
 	}
 
-	// println("Details:\n", user, "\nDo you wish to edit:\n1. Name\n2. Read Setting\n3. Write Setting\nOr type N to cancel.")
-	// fmt.Scanln(input)
-	// switch input {
-	// case "1":
-	// 	fmt.Scanln(input)
-	// 	user.Name = input
-	// 	//sqlQuery := fmt.Sprintf(`UPDATE users SET name = %v WHERE ID = %v;`, input, user.ID)
-	// 	// _, err := db.Exec(sqlQuery)
-	// 	// if err != nil {
-	// 	// 	log.Fatal(err)
-	// 	// 	fmt.Println("An error occurred when trying to update the user.")
-	// 	// }
-	// 	returnMsg += fmt.Sprintf("The name for this user has been changed to '%v'", input)
-	// 	return returnMsg
-	// case "2":
-	// 	fmt.Scanln(input)
-	// 	//user.Read_Setting = strconv.ParseBool(input)
-	// 	//sqlQuery := fmt.Sprintf(`UPDATE users SET read_setting = %v WHERE ID = %v;`, input, user.ID)
-	// 	// _, err := db.Exec(sqlQuery)
-	// 	// if err != nil {
-	// 	// 	log.Fatal(err)
-	// 	// 	fmt.Println("An error occurred when trying to update the user.")
-	// 	// }
-	// 	returnMsg += fmt.Sprintf("The read setting for this user has been changed to '%v'", input)
-	// 	return returnMsg
-	// case "3":
-	// 	fmt.Scanln(input)
-	// 	//user.Write_Setting = strconv.ParseBool(input)
-	// 	//sqlQuery := fmt.Sprintf(`UPDATE users SET write_setting = %v WHERE ID = %v;`, input, user.ID)
-	// 	// _, err := db.Exec(sqlQuery)
-	// 	// if err != nil {
-	// 	// 	log.Fatal(err)
-	// 	// 	fmt.Println("An error occurred when trying to update the user.")
-	// 	// }
-	// 	returnMsg += fmt.Sprintf("The write setting for this user has been changed to '%v'", input)
-	// 	return returnMsg
-	// default:
-	// 	return ""
-	// }
-
-	sqlQuery := fmt.Sprintf(`UPDATE users SET userName = %s, userReadSetting = %t, userWriteSetting = %t WHERE userID = %d`, userName, userReadSetting, userWriteSetting, userID)
+	sqlQuery := fmt.Sprintf(`UPDATE users SET userName = '%s', userReadSetting = %t, userWriteSetting = %t WHERE userID = %d`, userName, userReadSetting, userWriteSetting, userID)
 	_, err = db.Exec(sqlQuery)
 	if err != nil {
 		log.Fatal(err)
@@ -211,7 +165,7 @@ func updateUser(userID int, userName string, userReadSetting bool, userWriteSett
 		return returnMsg
 	}
 
-	returnMsg += fmt.Sprintf("The user information has been successfully updated.")
+	returnMsg += "The user information has been successfully updated."
 	return returnMsg
 }
 
@@ -245,7 +199,7 @@ func deleteUser(userID int) string {
 	// returnMsg += fmt.Sprintf("The information for user '%v' has been deleted.", user.Name)
 	// return returnMsg
 
-	sqlQuery := fmt.Sprintf(`DELETE * FROM users WHERE ID = %v;`, userID)
+	sqlQuery := fmt.Sprintf(`DELETE FROM users WHERE userID = %d;`, userID)
 	_, err = db.Exec(sqlQuery)
 	if err != nil {
 		log.Fatal(err)
@@ -254,27 +208,13 @@ func deleteUser(userID int) string {
 
 	//set the values of the user to null to remove it from the slice
 	Users[userID-1] = User{}
-	returnMsg += fmt.Sprintf("The record for user with ID '%v' has been successfully deleted.", userID)
+	returnMsg += fmt.Sprintf("The record for user with ID %d has been successfully deleted.", userID)
 	return returnMsg
 }
 
 // Create Note Function
-func createNote(noteName string, noteText string, noteCompletionTime string, noteStatus string, noteDelegation int, noteSharedUsers []int) string {
+func createNote(noteName string, noteText string, noteCompletionTime string, noteStatus string, noteDelegation int, noteSharedUsers string) string {
 	returnMsg := ""
-	// note_name, note_text, note_time, note_status, note_delegation, note_users := "", "", "", "", "", []string{}
-	// fmt.Scanln(&note_name)
-	// fmt.Scanln(&note_text)
-	// fmt.Scanln(&note_time)
-	// fmt.Scanln(&note_status)
-	// fmt.Scanln(&note_delegation)
-	// fmt.Scanln(&note_users)
-
-	//sqlQuery := fmt.Sprintf(`INSERT INTO notes VALUE (%v, %v, %v, %v, %v, %v);`, new_note.Name, new_note.Text, new_note.Completion_Time, new_note.Status, new_note.Delegation, new_note.Shared_Users)
-	// _, err := db.Exec(sqlQuery)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// 	fmt.Println("An error occurred when trying to create the note.")
-	// }
 
 	// Connect to the database
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
@@ -290,7 +230,7 @@ func createNote(noteName string, noteText string, noteCompletionTime string, not
 		log.Fatal(err)
 	}
 
-	sqlQuery := fmt.Sprintf(`INSERT INTO notes VALUES ('%s', '%s', '%s', '%s', '%s', '%v')`, noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers)
+	sqlQuery := fmt.Sprintf(`INSERT INTO notes(noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers) VALUES ('%s', '%s', '%s', '%s', %d, ARRAY%s)`, noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers)
 	_, err = db.Exec(sqlQuery)
 	if err != nil {
 		log.Fatal(err)
@@ -348,7 +288,7 @@ func readNote(noteID int) string {
 }
 
 // Update Note Function
-func updateNote(noteID int, noteName string, noteText string, noteCompletionTime string, noteStatus string, noteDelegation int, noteSharedUsers []int) string {
+func updateNote(noteID int, noteName string, noteText string, noteCompletionTime string, noteStatus string, noteDelegation int, noteSharedUsers string) string {
 	returnMsg := ""
 
 	// Connect to the database
@@ -365,80 +305,7 @@ func updateNote(noteID int, noteName string, noteText string, noteCompletionTime
 		log.Fatal(err)
 	}
 
-	// println("Details:\n", note, "\nDo you wish to edit:\n1. Name\n2. Text\n3. Completion Time\n4. Status\n5. Delegation\n6. Shared Users\nOr type N to cancel.")
-	// fmt.Scanln(input)
-	// switch input {
-	// case "1":
-	// 	fmt.Scanln(input)
-	// 	note.Name = input
-	// 	//sqlQuery := fmt.Sprintf(`UPDATE notes SET name = %v WHERE ID = %v;`, input, note.ID)
-	// 	// _, err := db.Exec(sqlQuery)
-	// 	// if err != nil {
-	// 	// 	log.Fatal(err)
-	// 	// 	fmt.Println("An error occurred when trying to update the note.")
-	// 	// }
-	// 	returnMsg += fmt.Sprintf("The name for this note has been changed to '%v'\n", input)
-	// 	return returnMsg
-	// case "2":
-	// 	fmt.Scanln(input)
-	// 	note.Text = input
-	// 	//sqlQuery := fmt.Sprintf(`UPDATE notes SET text = %v WHERE ID = %v;`, input, note.ID)
-	// 	// _, err := db.Exec(sqlQuery)
-	// 	// if err != nil {
-	// 	// 	log.Fatal(err)
-	// 	// 	fmt.Println("An error occurred when trying to update the note.")
-	// 	// }
-	// 	returnMsg += fmt.Sprintf("The text for this note has been changed to '%v'\n", input)
-	// 	return returnMsg
-	// case "3":
-	// 	fmt.Scanln(input)
-	// 	note.Completion_Time = input
-	// 	//sqlQuery := fmt.Sprintf(`UPDATE notes SET completion_time = %v WHERE ID = %v;`, input, note.ID)
-	// 	// _, err := db.Exec(sqlQuery)
-	// 	// if err != nil {
-	// 	// 	log.Fatal(err)
-	// 	// 	fmt.Println("An error occurred when trying to update the note.")
-	// 	// }
-	// 	returnMsg += fmt.Sprintf("The completion time for this note has been changed to '%v'\n", input)
-	// 	return returnMsg
-	// case "4":
-	// 	fmt.Scanln(input)
-	// 	note.Status = input
-	// 	//sqlQuery := fmt.Sprintf(`UPDATE notes SET status = %v WHERE ID = %v;`, input, note.ID)
-	// 	// _, err := db.Exec(sqlQuery)
-	// 	// if err != nil {
-	// 	// 	log.Fatal(err)
-	// 	// 	fmt.Println("An error occurred when trying to update the note.")
-	// 	// }
-	// 	returnMsg += fmt.Sprintf("The status for this note has been changed to '%v'\n", input)
-	// 	return returnMsg
-	// case "5":
-	// 	fmt.Scanln(input)
-	// 	note.Delegation = input
-	// 	//sqlQuery := fmt.Sprintf(`UPDATE notes SET delegation = %v WHERE ID = %v;`, input, note.ID)
-	// 	// _, err := db.Exec(sqlQuery)
-	// 	// if err != nil {
-	// 	// 	log.Fatal(err)
-	// 	// 	fmt.Println("An error occurred when trying to update the note.")
-	// 	// }
-	// 	returnMsg += fmt.Sprintf("The delegation for this note has been changed to '%v'\n", input)
-	// 	return returnMsg
-	// case "6":
-	// 	fmt.Scanln(input)
-	// 	// note.Shared_Users = input
-	// 	//sqlQuery := fmt.Sprintf(`UPDATE notes SET shared_users = %v WHERE ID = %v;`, input, note.ID)
-	// 	// _, err := db.Exec(sqlQuery)
-	// 	// if err != nil {
-	// 	// 	log.Fatal(err)
-	// 	// 	fmt.Println("An error occurred when trying to update the note.")
-	// 	// }
-	// 	returnMsg += fmt.Sprintf("The shared users for this note have been changed to '%v'\n", input)
-	// 	return returnMsg
-	// default:
-	// 	return ""
-	// }
-
-	sqlQuery := fmt.Sprintf(`UPDATE notes SET noteName = %s, noteText = %s, noteCompletionTime = %v, noteStatus = %s, noteDelegation = %s, noteSharedUsers = %v WHERE noteID = %d`, noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers, noteID)
+	sqlQuery := fmt.Sprintf(`UPDATE notes SET noteName = '%s', noteText = '%s', noteCompletionTime = '%s', noteStatus = '%s', noteDelegation = %d, noteSharedUsers = ARRAY%s WHERE noteID = %d`, noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers, noteID)
 	_, err = db.Exec(sqlQuery)
 	if err != nil {
 		log.Fatal(err)
@@ -446,7 +313,7 @@ func updateNote(noteID int, noteName string, noteText string, noteCompletionTime
 		return returnMsg
 	}
 	// println(note)
-	returnMsg += fmt.Sprintf("The note has been successfully updated.")
+	returnMsg += "The note has been successfully updated."
 
 	return returnMsg
 }
@@ -469,7 +336,7 @@ func deleteNote(noteID int) string {
 		log.Fatal(err)
 	}
 
-	sqlQuery := fmt.Sprintf(`DELETE * FROM notes WHERE ID = %v;`, noteID)
+	sqlQuery := fmt.Sprintf(`DELETE FROM notes WHERE noteID = %d;`, noteID)
 	_, err = db.Exec(sqlQuery)
 	if err != nil {
 		log.Fatal(err)
@@ -478,7 +345,7 @@ func deleteNote(noteID int) string {
 
 	//set the values of the note to null to remove it from the slice
 	Notes[noteID-1] = Note{}
-	returnMsg += fmt.Sprintf("The record for note with ID '%v' has been successfully deleted.", noteID)
+	returnMsg += fmt.Sprintf("The record for note with ID %d has been successfully deleted.", noteID)
 	return returnMsg
 }
 
@@ -501,7 +368,7 @@ func findNote(inputPattern string) (bool, string) {
 		log.Fatal(err)
 	}
 
-	sqlQuery := fmt.Sprintf(`SELECT * FROM notes WHERE noteText LIKE %v;`, inputPattern)
+	sqlQuery := fmt.Sprintf(`SELECT * FROM notes WHERE noteText ~ '%s';`, inputPattern)
 	queryRows, err := db.Query(sqlQuery)
 	if err != nil {
 		log.Fatal(err)
@@ -514,16 +381,13 @@ func findNote(inputPattern string) (bool, string) {
 	// 		return result, returnMsg
 	// 	}
 	// }
+	result = true
 	returnMsg += fmt.Sprintf("At least one match was successfully found for that pattern. Result:\n%v\n", queryRows)
 	return result, returnMsg
 }
 
 // Analyse Note Function
-func analyseNote(inputPattern string, noteID int) (int, string) {
-	result := 0
-	// j := 0
-	//pattern := len(input)
-	// noteText := len(note.Text)
+func analyseNote(inputPattern string, noteID int) string {
 	returnMsg := ""
 
 	// Connect to the database
@@ -540,147 +404,29 @@ func analyseNote(inputPattern string, noteID int) (int, string) {
 		log.Fatal(err)
 	}
 
-	// for result < noteText-pattern+1 {
-	// 	for j = 0; j < pattern-1; j++ {
-	// 		if input[result+j] != note.Text[j] { //match letter from substring
-	// 			break // failed match, continue searching
-	// 		}
-	// 	}
-
-	// 	if j == pattern-1 {
-	// 		if result == 1 {
-	// 			returnMsg += fmt.Sprintln("The analysis returned %v instance of \"%v\" in the note '%v'\n", strconv.Itoa(result), input, note.Name)
-	// 		} else {
-	// 			returnMsg += fmt.Sprintln("The analysis returned %v instances of \"%v\" in the note '%v'\n", strconv.Itoa(result), input, note.Name)
-	// 		}
-	// 		return result, returnMsg
-	// 	} else if j == 0 {
-	// 		result++
-	// 	} else {
-	// 		result = result + j
-	// 	}
-	// }
-
-	sqlQuery := fmt.Sprintf(`SELECT regexp_matches("noteText", '%s') FROM notes WHERE "noteID" = %d;`, inputPattern, noteID)
+	sqlQuery := fmt.Sprintf(`SELECT count(*) FROM notes CROSS JOIN LATERAL regexp_matches(noteText, '%s', 'g') WHERE noteID = %d;`, inputPattern, noteID)
 	queryRows, err := db.Query(sqlQuery)
 	if err != nil {
 		log.Fatal(err)
 		returnMsg += "An error occurred when trying to find text matching the given pattern.\n"
 	}
-
-	returnMsg += fmt.Sprintln("The analysis returned %d instances of \"%v\" in the text.\nResult: %v\n", result, inputPattern, queryRows)
-	return -1, returnMsg //not found so return no position
+	queryCount := 0
+	for queryRows.Next() {
+		err := queryRows.Scan(&queryCount)
+		if err != nil {
+			log.Fatal(err)
+			returnMsg += "An error occurred when trying to retrieve the count of pattern matches.\n"
+		}
+	}
+	returnMsg += fmt.Sprintf("The analysis returned %v instances of \"%s\" in the text.", queryCount, inputPattern)
+	return returnMsg
 }
-
-// Select Pattern Function
-// func selectPattern() string {
-// 	pattern := ""
-// 	if optionSelect {
-// 		var inputNum int
-// 		println("Please select a pattern option:\n\n1. A sentence with a given prefix and/or suffix\n2. A phone number with a given area code and optionally a consecutive sequence of numbers that are part of that number\n3. An email address on a domain that is only partially provided\n4. Text that contains at least three of the following case-insensitive words: meeting, minutes, agenda, action, attendees, apologies\n5. A word in all capitals of three characters or more\nOr enter 'r' to return.")
-// 		fmt.Scanln(inputNum)
-// 		switch inputNum {
-// case "1":
-// 	println("\n\nPlease enter a string that matches the pattern: A sentence with a given prefix and/or suffix")
-// 	fmt.Scanln(input)
-// 	pattern = input
-// 	return pattern
-// case "2":
-// 	pattern := `[0-9\W]`
-// 	println("\n\nPlease enter a string that matches the pattern: A phone number with a given area code and optionally a consecutive sequence of numbers that are part of that number")
-// 	fmt.Scanln(input)
-
-// 	// Check for erroneous value
-// 	switch validatePattern(pattern, input).isValid {
-// 	case true:
-// 		pattern = input
-// 		return pattern
-// 	default:
-// 		fmt.print(validatePattern(pattern, input).returnMsg)
-// 	continue
-// case "3":
-// 	pattern := `@{1}`
-// 	println("\n\nPlease enter a string that matches the pattern: An email address on a domain that is only partially provided")
-// 	fmt.Scanln(input)
-// 	_, err := regexp.MatchString(`@{1}`, input)
-// 	pattern = input
-// 	return pattern
-// case "4":
-// 	pattern := `meeting|minutes|agenda|action|attendees|apologies{3,}`
-// 	println("\n\nPlease enter a string that matches the pattern: Text that contains at least three of the following case-insensitive words: meeting, minutes, agenda, action, attendees, apologies")
-// 	fmt.Scanln(input)
-// 	_, err := regexp.MatchString(`meeting|minutes|agenda|action|attendees|apologies{3,}`, input)
-// 	pattern = input
-// 	return pattern
-// case "5":
-// 	pattern := `[A-Z]{3,}`
-// 	println("\n\nPlease enter a string that matches the pattern: A word in all capitals of three characters or more")
-// 	fmt.Scanln(input)
-// 	_, err := regexp.MatchString(`[A-Z]{3,}`, input)
-// 	pattern = input
-// 	return pattern
-// 		case 1, 2, 3, 4, 5:
-// 			i := 0
-// 			for k, v := range Patterns {
-// 				i++
-// 				if i == inputNum {
-// 					var inputStr string
-// 					pattern := Patterns[k]
-// 					patternDesc := Patterns[v]
-// 					fmt.Printf("\n\nPlease enter a string that matches the pattern: %v", patternDesc)
-// 					fmt.Scanln(inputStr)
-
-// 					// Check for erroneous value
-// 					switch isValid, returnMsg := validatePattern(pattern, inputStr); {
-// 					case isValid:
-// 						pattern = inputStr
-// 						return pattern
-// 					default:
-// 						fmt.Println(returnMsg)
-// 						continue
-// 					}
-// 				}
-// 			}
-// 		default:
-// 			return ""
-// 		}
-// 	}
-// 	return pattern
-// }
-
-// Select Option Function
-// func selectOption() {
-// 	if optionSelect {
-// 		input := ""
-// 		println("Please select an option:\n\n1. Users\n2. Notes")
-// 		fmt.Scanln(input)
-// 		switch input {
-// 		case "1":
-// 			println("\n\nPlease select an option:\n\n1.Create User\n2.Read User\n3.Update User\n4.Delete User\nOr enter 'r' to return.")
-// 			fmt.Scanln(input)
-// 			switch input {
-// 			case "1":
-// 				//createUser()
-// 			case "2":
-// 				//readUser()
-// 			case "3":
-// 				//updateUser()
-// 			case "4":
-// 				//deleteUser()
-// 			default:
-// 				return
-// 			}
-// 		default:
-// 			return
-// 		}
-// 	}
-// }
 
 // --- Main ---//
 func main() {
-	go StartServer()
+	// go StartServer()
 	fmt.Print(CreateDB())
 	fmt.Print(CreateTables())
 	fmt.Print(PopulateTables())
-	//selectOption()
+	fmt.Print(readUser(1))
 }

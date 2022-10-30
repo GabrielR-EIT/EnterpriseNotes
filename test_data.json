@@ -7,14 +7,15 @@
 		{"user_id":5,"name":"Futaba Sakura","read_setting":true,"write_setting":true},
 		{"user_id":6,"name":"Kinzie Kensington","read_setting":true,"write_setting":true}
     ],
-    "notes": [{
+    "notes": [
+    {
         "note_id": 1,
         "name": "Meeting Agenda",
         "text": "This is the agenda for the meeting. The meeting has been agendered.",
         "completion_date": "7/10/22",
         "status": "delegated",
         "delegation": 3,
-        "shared_users": [1, 2, 3, 4, 5]
+        "shared_users": "[1, 2, 3, 4, 5]"
     }, {
         "note_id": 2,
         "name": "Phone Numbers",
@@ -22,7 +23,7 @@
         "completion_date": "7/10/22",
         "status": "completed",
         "delegation": 1,
-        "shared_users": [2]
+        "shared_users": "[2]"
     }, {
         "note_id": 3,
         "name": "Top 5 Action Movies",
@@ -30,7 +31,7 @@
         "completion_date": "7/10/22",
         "status": "completed",
         "delegation": 2,
-        "shared_users": [2, 4]
+        "shared_users": "[2, 4]"
     }, {
         "note_id": 4,
         "name": "HOW TO TURN OFF CAPS LOCK",
@@ -38,7 +39,7 @@
         "completion_date": "7/10/22",
         "status": "cancelled",
         "delegation": 5,
-        "shared_users": [1, 2, 3, 4, 5]
+        "shared_users": "[1, 2, 3, 4, 5]"
     }, {
         "note_id": 5,
         "name": "My Favourite Email Addresses from the Last 10 Minutes",
@@ -46,7 +47,7 @@
         "completion_date": "7/10/22",
         "status": "in progress",
         "delegation": 4,
-        "shared_users": [4, 2]
+        "shared_users": "[4, 2]"
     }],
 	"associations": [
         {"association_id":1,"user_id":3,"note_id":1,"permission":""},

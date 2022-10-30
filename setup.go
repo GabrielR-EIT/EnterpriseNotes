@@ -14,7 +14,7 @@ const (
 	port     = 5432
 	user     = "postgres"
 	password = "postgres"
-	dbname   = ""
+	dbname   = "enterprisenotes"
 )
 
 // Create Struct for Test Data
@@ -89,7 +89,6 @@ func CreateTables() string {
 	var returnMsg string
 
 	//Connect to the database
-	const dbname = "enterprisenotes"
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
 	// Ping the database for connectivity
@@ -127,8 +126,8 @@ func CreateTables() string {
 		noteText TEXT, 
 		noteCompletionTime timestamp DEFAULT CURRENT_TIMESTAMP,
 		noteStatus VARCHAR(20) DEFAULT 'none',
-		noteDelegation VARCHAR(20),
-		noteSharedUsers VARCHAR(100)
+		noteDelegation INT,
+		noteSharedUsers INT[]
 	);`
 	_, err = db.Exec(sqlQuery)
 	if err != nil {
@@ -212,19 +211,6 @@ func PopulateTables() string {
 		return returnMsg
 	}
 	returnMsg += "The 'users', 'notes', and 'associations' tables were truncated successfully.\n"
-
-	// Populate the users table
-	// for _, user := range Users {
-	// 	sqlQuery = fmt.Sprintf(`INSERT INTO users VALUES (%d, '%s', %t, %t)`, NextID(), user.Name, user.Read_Setting, user.Write_Setting)
-	// 	fmt.Println(sqlQuery)
-	// 	_, err = db.Exec(sqlQuery)
-	// 	if err != nil {
-	// 		log.Fatal(err)
-	// 		returnMsg += "An error occurred when populating the 'users' table.\n"
-	// 		return returnMsg
-	// 	}
-	// }
-	// returnMsg += "The 'users' table was populated successfully.\n"
 
 	// var newID int
 	// newID = 0
