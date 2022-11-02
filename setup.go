@@ -1,12 +1,13 @@
 package main
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
+
+	"github.com/jmoiron/sqlx"
 )
 
 const (
@@ -54,7 +55,7 @@ func CreateDB() string {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s sslmode=disable", host, port, user, password)
 
 	// Ping the database for connectivity
-	db, err := sql.Open("postgres", psqlInfo)
+	db, err := sqlx.Open("postgres", psqlInfo)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -78,9 +79,8 @@ func CreateDB() string {
 		returnMsg += "An error occurred when creating the 'EnterpriseNotes' database.\n"
 		return returnMsg
 	}
-	//const dbname = "EnterpriseNotes"
-	returnMsg += "The 'EnterpriseNotes' database was created successfully.\n"
 
+	returnMsg += "The 'EnterpriseNotes' database was created successfully.\n"
 	return returnMsg
 }
 
@@ -92,7 +92,7 @@ func CreateTables() string {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
 	// Ping the database for connectivity
-	db, err := sql.Open("postgres", psqlInfo)
+	db, err := sqlx.Open("postgres", psqlInfo)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -112,10 +112,9 @@ func CreateTables() string {
 	);`
 	_, err = db.Exec(sqlQuery)
 	if err != nil {
-		log.Fatal(err)
-		returnMsg += "An error occurred when creating the 'users' table.\n"
-		return returnMsg
+		log.Fatalf("An error occurred when creating the 'users' table.\nGot %s", err)
 	}
+
 	returnMsg += "The 'users' table was created successfully.\n"
 
 	// Create the notes table
@@ -131,10 +130,9 @@ func CreateTables() string {
 	);`
 	_, err = db.Exec(sqlQuery)
 	if err != nil {
-		log.Fatal(err)
-		returnMsg += "An error occurred when creating the 'notes' table.\n"
-		return returnMsg
+		log.Fatalf("An error occurred when creating the 'notes' table.\nGot %s\n", err)
 	}
+
 	returnMsg += "The 'notes' table was created successfully.\n"
 
 	// Create the associations table
@@ -149,12 +147,10 @@ func CreateTables() string {
 	);`
 	_, err = db.Exec(sqlQuery)
 	if err != nil {
-		log.Fatal(err)
-		returnMsg += "An error occurred when creating the 'associations' table.\n"
-		return returnMsg
+		log.Fatalf("An error occurred when creating the 'associations' table.\nGot %s\n", err)
 	}
-	returnMsg += "The 'associations' table was created successfully.\n"
 
+	returnMsg += "The 'associations' table was created successfully.\n"
 	return returnMsg
 }
 
@@ -165,11 +161,11 @@ func PopulateTables() string {
 	// Open the JSON Test Data
 	jsonFile, err := os.Open("test_data.json")
 	if err != nil {
-		returnMsg += "An error occurred when reading the JSON file.\n"
-		return returnMsg
+		log.Printf("An error occurred when reading the JSON file.\nGot %s\n", err)
 	}
-	returnMsg += "The JSON file was opened successfully.\n"
+
 	defer jsonFile.Close()
+	returnMsg += "The JSON file was opened successfully.\n"
 
 	// Unmarshal the JSON Test Data
 	byteValue, _ := ioutil.ReadAll(jsonFile)
@@ -192,105 +188,50 @@ func PopulateTables() string {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
 	// Ping the database for connectivity
-	db, err := sql.Open("postgres", psqlInfo)
+	db, err := sqlx.Open("postgres", psqlInfo)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	defer db.Close()
 	err = db.Ping()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	// Truncate the users, notes, and associations tables
 	sqlQuery := `TRUNCATE users, notes, associations RESTART IDENTITY CASCADE;`
 	_, err = db.Exec(sqlQuery)
 	if err != nil {
-		log.Fatal(err)
-		returnMsg += "An error occurred when truncating the 'users', 'notes', and 'associations' tables.\n"
-		return returnMsg
+		log.Printf("An error occurred when truncating the 'users', 'notes', and 'associations' tables.\nGot %s\n", err)
 	}
+
 	returnMsg += "The 'users', 'notes', and 'associations' tables were truncated successfully.\n"
 
-	// var newID int
-	// newID = 0
-
-	// Populate the users table (ALT)
+	// Populate the users table
 	for _, user := range Users {
-		//newID++
 		createUser(user.Name, user.Read_Setting, user.Write_Setting)
-		// sqlQuery = fmt.Sprintf(`INSERT INTO users (userName, userReadSetting, userWriteSetting) VALUES ('%s', %t, %t)`, user.Name, user.Read_Setting, user.Write_Setting)
-		// fmt.Println(sqlQuery)
-		// _, err = db.Exec(sqlQuery)
-		// if err != nil {
-		// 	log.Fatal(err)
-		// 	returnMsg += "An error occurred when populating the 'users' table.\n"
-		// 	return returnMsg
-		// }
 	}
+
 	returnMsg += "The 'users' table was populated successfully.\n"
 
 	// Populate the notes table
-	// for _, note := range Notes {
-	// 	sqlQuery := fmt.Sprintf(`INSERT INTO notes VALUES (%d, '%s', '%s', '%s', '%s', '%s', %v)`, NextID(), note.Name, note.Text, note.Completion_Time, note.Status, note.Delegation, note.Shared_Users)
-	// 	fmt.Println(sqlQuery)
-	// 	_, err = db.Exec(sqlQuery)
-	// 	if err != nil {
-	// 		log.Fatal(err)
-	// 		returnMsg += "An error occurred when populating the 'notes' table.\n"
-	// 		return returnMsg
-	// 	}
-	// }
-	// returnMsg += "The 'notes' table was populated successfully.\n"
-
-	//newID = 0
-
-	// Populate the notes table (ALT)
 	for _, note := range Notes {
-		//newID++
 		createNote(note.Name, note.Text, note.Completion_Time, note.Status, note.Delegation, note.Shared_Users)
-		// sqlQuery := fmt.Sprintf(`INSERT INTO notes (noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers) VALUES ('%s', '%s', '%s', '%s', '%s', '%v')`, note.Name, note.Text, note.Completion_Time, note.Status, note.Delegation, note.Shared_Users)
-		// fmt.Println(sqlQuery)
-		// _, err = db.Exec(sqlQuery)
-		// if err != nil {
-		// 	log.Fatal(err)
-		// 	returnMsg += "An error occurred when populating the 'notes' table.\n"
-		// 	return returnMsg
-		// }
 	}
+
 	returnMsg += "The 'notes' table was populated successfully.\n"
 
 	// Create the associations table
-	// for _, association := range Associations {
-	// 	newID++
-	// 	sqlQuery := fmt.Sprintf(`INSERT INTO associations VALUES (%d, %d, %d, '%s')`, NextID(), association.userID, association.noteID, association.permission)
-	// 	fmt.Println(sqlQuery)
-	// 	_, err = db.Exec(sqlQuery)
-	// 	if err != nil {
-	// 		log.Fatal(err)
-	// 		returnMsg += "An error occurred when populating the 'associations' table.\n"
-	// 		return returnMsg
-	// 	}
-	// }
-	// returnMsg += "The 'associations' table was populated successfully.\n"
-
-	// return returnMsg
-
-	//newID = 0
-
-	// Create the associations table (ALT)
 	for _, association := range Associations {
 		//newID++
 		sqlQuery := fmt.Sprintf(`INSERT INTO associations (userID, noteID, associationPerm) VALUES (%d, %d, '%s')`, association.UserID, association.NoteID, association.Permission)
 		fmt.Println(sqlQuery)
 		_, err = db.Exec(sqlQuery)
 		if err != nil {
-			log.Fatal(err)
-			returnMsg += "An error occurred when populating the 'associations' table.\n"
-			return returnMsg
+			log.Printf("An error occurred when populating the 'associations' table.\nGot %s\n", err)
 		}
 	}
-	returnMsg += "The 'associations' table was populated successfully.\n"
 
+	returnMsg += "The 'associations' table was populated successfully.\n"
 	return returnMsg
 }

@@ -1,12 +1,12 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"strconv"
 	"testing"
-	_ "testing"
+
+	"github.com/jmoiron/sqlx"
 )
 
 type noteTest struct {
@@ -33,14 +33,14 @@ func TestCreateUser(t *testing.T) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
 	// Ping the database for connectivity
-	db, err := sql.Open("postgres", psqlInfo)
+	db, err := sqlx.Open("postgres", psqlInfo)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	defer db.Close()
 	err = db.Ping()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	//Create User Data
@@ -57,9 +57,9 @@ func TestCreateUser(t *testing.T) {
 	want := fmt.Sprintf("A new user has been successfully added.\nDetails:\n%v\nThere are now %v users in the database.\n", test_user, strconv.Itoa(len(Users)))
 
 	if got != want {
-		t.Errorf("Got %v, wanted %v", got, want)
+		t.Errorf("createUser() Test: Got %v, wanted %v", got, want)
 	} else {
-		t.Logf("Got %v, wanted %v. CreateUser() test was successful.", got, want)
+		t.Logf("createUser() Test: Got %v, wanted %v. Test was successful.", got, want)
 	}
 }
 
@@ -72,23 +72,25 @@ func TestReadUser(t *testing.T) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
 	// Ping the database for connectivity
-	db, err := sql.Open("postgres", psqlInfo)
+	db, err := sqlx.Open("postgres", psqlInfo)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	defer db.Close()
 	err = db.Ping()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
+	var user User
+	db.QueryRowx(`SELECT * FROM users WHERE userID = 1`).StructScan(&user)
 	got := readUser(1)
-	want := fmt.Sprintf("User details:\n%v\n", db.QueryRow(`SELECT * FROM users WHERE userID = 1`))
+	want := fmt.Sprintf("User details:\n%v\n", user)
 
 	if got != want {
-		t.Errorf("Got %v, wanted %v", got, want)
+		t.Errorf("readUser() Test: Got %v, wanted %v", got, want)
 	} else {
-		t.Logf("Got %v, wanted %v. ReadUser() test was successful.", got, want)
+		t.Logf("readUser() Test: Got %v, wanted %v. Test was successful.", got, want)
 	}
 }
 
@@ -101,14 +103,14 @@ func TestUpdateUser(t *testing.T) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
 	// Ping the database for connectivity
-	db, err := sql.Open("postgres", psqlInfo)
+	db, err := sqlx.Open("postgres", psqlInfo)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	defer db.Close()
 	err = db.Ping()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	// Create New User Data
@@ -120,9 +122,9 @@ func TestUpdateUser(t *testing.T) {
 	want := "The user information has been successfully updated."
 
 	if got != want {
-		t.Errorf("Got %v, wanted %v", got, want)
+		t.Errorf("updateUser() Test: Got %v, wanted %v", got, want)
 	} else {
-		t.Logf("Got %v, wanted %v. UpdateUser() test was successful.", got, want)
+		t.Logf("updateUser() Test: Got %v, wanted %v. Test was successful.", got, want)
 	}
 }
 
@@ -135,23 +137,23 @@ func TestDeleteUser(t *testing.T) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
 	// Ping the database for connectivity
-	db, err := sql.Open("postgres", psqlInfo)
+	db, err := sqlx.Open("postgres", psqlInfo)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	defer db.Close()
 	err = db.Ping()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	got := deleteUser(1)
 	want := "The record for user with ID 1 has been successfully deleted."
 
 	if got != want {
-		t.Errorf("Got %v, wanted %v", got, want)
+		t.Errorf("deleteUser() Test: Got %v, wanted %v", got, want)
 	} else {
-		t.Logf("Got %v, wanted %v. DeleteUser() test was successful.", got, want)
+		t.Logf("deleteUser() Test: Got %v, wanted %v. Test was successful.", got, want)
 	}
 }
 
@@ -164,21 +166,21 @@ func TestCreateNote(t *testing.T) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
 	// Ping the database for connectivity
-	db, err := sql.Open("postgres", psqlInfo)
+	db, err := sqlx.Open("postgres", psqlInfo)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	defer db.Close()
 	err = db.Ping()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	// Create Note Data
 	test_note := Note{
 		Name:            "test note",
 		Text:            "test text",
-		Completion_Time: "CURRENT_TIMESTAMP()",
+		Completion_Time: "CURRENT_TIMESTAMP",
 		Status:          "completed",
 		Delegation:      1,
 		Shared_Users:    "[6, 1]",
@@ -188,9 +190,9 @@ func TestCreateNote(t *testing.T) {
 	want := fmt.Sprintf("Your new note has been successfully added.\nDetails:\n%v\nThere are now %v notes in the database.", test_note, strconv.Itoa(len(Notes)))
 
 	if got != want {
-		t.Errorf("Got %v, wanted %v", got, want)
+		t.Errorf("createNote() Test: Got %v, wanted %v", got, want)
 	} else {
-		t.Logf("Got %v, wanted %v. CreateNote() test was successful.", got, want)
+		t.Logf("createNote() Test: Got %v, wanted %v. Test was successful.", got, want)
 	}
 }
 
@@ -203,23 +205,25 @@ func TestReadNote(t *testing.T) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
 	// Ping the database for connectivity
-	db, err := sql.Open("postgres", psqlInfo)
+	db, err := sqlx.Open("postgres", psqlInfo)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	defer db.Close()
 	err = db.Ping()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
+	var note Note
+	db.QueryRowx(`SELECT * FROM notes WHERE noteID = 1`).StructScan(&note)
 	got := readNote(1)
-	want := fmt.Sprintf("Note details:\n%v\n", db.QueryRow(`SELECT * FROM notes WHERE noteID = %d`))
+	want := fmt.Sprintf("Note details:\n%v\n", note)
 
 	if got != want {
-		t.Errorf("Got %v, wanted %v", got, want)
+		t.Errorf("readNote() Test: Got %v, wanted %v", got, want)
 	} else {
-		t.Logf("Got %v, wanted %v. ReadNote() test was successful.", got, want)
+		t.Logf("readNote() Test: Got %v, wanted %v. Test was successful.", got, want)
 	}
 }
 
@@ -232,21 +236,21 @@ func TestUpdateNote(t *testing.T) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
 	// Ping the database for connectivity
-	db, err := sql.Open("postgres", psqlInfo)
+	db, err := sqlx.Open("postgres", psqlInfo)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	defer db.Close()
 	err = db.Ping()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	//Create New Note Data
 	noteID := 1
 	noteName := "updated note"
 	noteText := "updated text"
-	noteCompletionTime := ""
+	noteCompletionTime := "CURRENT_TIMESTAMP"
 	noteStatus := "in-progress"
 	noteDelegation := 2
 	noteSharedUsers := "[6, 2]"
@@ -255,9 +259,9 @@ func TestUpdateNote(t *testing.T) {
 	want := "The user information has been successfully updated."
 
 	if got != want {
-		t.Errorf("Got %v, wanted %v", got, want)
+		t.Errorf("updateNote() Test: Got %v, wanted %v", got, want)
 	} else {
-		t.Logf("Got %v, wanted %v. UpdateNote() test was successful.", got, want)
+		t.Logf("updateNote() Test: Got %v, wanted %v. Test was successful.", got, want)
 	}
 }
 
@@ -270,23 +274,23 @@ func TestDeleteNote(t *testing.T) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
 	// Ping the database for connectivity
-	db, err := sql.Open("postgres", psqlInfo)
+	db, err := sqlx.Open("postgres", psqlInfo)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	defer db.Close()
 	err = db.Ping()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	got := deleteNote(1)
 	want := "The record for note with ID 1 has been successfully deleted."
 
 	if got != want {
-		t.Errorf("Got %v, wanted %v", got, want)
+		t.Errorf("deleteNote() Test: Got %v, wanted %v", got, want)
 	} else {
-		t.Logf("Got %v, wanted %v. DeleteNote() test was successful.", got, want)
+		t.Logf("deleteNote() Test: Got %v, wanted %v. Test was successful.", got, want)
 	}
 }
 
@@ -299,26 +303,23 @@ func TestFindNote(t *testing.T) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
 	// Ping the database for connectivity
-	db, err := sql.Open("postgres", psqlInfo)
+	db, err := sqlx.Open("postgres", psqlInfo)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	defer db.Close()
 	err = db.Ping()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
-
-	testNum := 0
 
 	for _, note := range noteTests {
 		got, _ := findNote(note.input)
 		want := note.want
-		testNum++
 		if !got {
-			t.Errorf("FindNote() Test %d: Got %t, wanted %t", testNum, got, want)
+			t.Errorf("findNote() Test %d: Got %t, wanted %t", note.id, got, want)
 		} else {
-			t.Logf("FindNote() Test %d: Got %v, wanted %v. Test was successful.", testNum, got, want)
+			t.Logf("findNote() Test %d: Got %v, wanted %v. Test was successful.", note.id, got, want)
 		}
 	}
 }
@@ -332,23 +333,82 @@ func TestAnalyseNote(t *testing.T) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
 	// Ping the database for connectivity
-	db, err := sql.Open("postgres", psqlInfo)
+	db, err := sqlx.Open("postgres", psqlInfo)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	defer db.Close()
 	err = db.Ping()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	for _, note := range noteTests {
 		got := analyseNote(note.input, note.id)
 		want := fmt.Sprintf("The analysis returned %v instances of \"%s\" in the text.", note.count, note.input)
 		if got != want {
-			t.Errorf("Got %s, wanted %s", got, want)
+			t.Errorf("analyseNote() Test %d: Got %s, wanted %s", note.id, got, want)
 		} else {
-			t.Logf("Got %s, wanted %s. AnalyseNote() Test was successful.", got, want)
+			t.Logf("analyseNote() Test %d: Got %s, wanted %s. Test was successful.", note.id, got, want)
+		}
+	}
+}
+
+func TestValidatePattern(t *testing.T) {
+	type patternTest struct {
+		input   string
+		pattern string
+		id      int
+		want    bool
+	}
+
+	var patternTests = []patternTest{
+		{"pre", "[a-zA-z]+", 1, true},
+		{"123", "[a-zA-z]+", 2, false},
+		{"01189998819991197253", "[0-9\\W]", 3, true},
+		{"this is not a phone number", "[0-9\\W]", 4, false},
+		{"robing7@student.eit.ac.nz", "@{1}", 5, true},
+		{"01100101 01101101 01100001 01101001 01101100", "@{1}", 6, false},
+		{"action meeting apologies", "meeting|minutes|agenda|action|attendees|apologies{3,}", 7, true},
+		{"action meeting sorry", "meeting|minutes|agenda|action|attendees|apologies{3,}", 8, false},
+		{"UPPERCASE", "[A-Z]{3,}", 9, true},
+		{"UPPERcase", "[A-Z]{3,}", 10, false},
+	}
+
+	for _, pattern := range patternTests {
+		got, _ := validatePattern(pattern.pattern, pattern.input)
+		want := pattern.want
+		if got != want {
+			t.Errorf("validatePattern() Test %d: Got %t, wanted %t", pattern.id, got, want)
+		} else {
+			t.Logf("validatePattern() Test %d: Got %t, wanted %t. Test was successful.", pattern.id, got, want)
+		}
+	}
+}
+
+func TestValidateStatus(t *testing.T) {
+	type statusTest struct {
+		input string
+		id    int
+		want  bool
+	}
+
+	var statusTests = []statusTest{
+		{"none", 1, true},
+		{"in progress", 2, true},
+		{"completed", 3, true},
+		{"cancelled", 4, true},
+		{"delegated", 5, true},
+		{"invalid", 6, false},
+	}
+
+	for _, status := range statusTests {
+		got, _ := validateStatus(status.input)
+		want := status.want
+		if got != want {
+			t.Errorf("validateStatus() Test %d: Got %t, wanted %t", status.id, got, want)
+		} else {
+			t.Logf("validateStatus() Test %d: Got %t, wanted %t. Test was successful.", status.id, got, want)
 		}
 	}
 }
