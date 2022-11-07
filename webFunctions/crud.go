@@ -390,22 +390,22 @@ func DeleteNote(db *sqlx.DB, noteID int) gin.HandlerFunc {
 	}
 }
 
-func NotesNamesGet(ctx *gin.Context, notes interface{}) {
-	//db := ctx.Value("database").(*sqlx.DB)
-	var notesNames = []string{}
-	for _, note := range notes {
-		notesNames = append(notesNames, fmt.Sprint(note))
-	}
-	ctx.HTML(http.StatusOK, "views/notes.html", gin.H{
-		"notesNames": notesNames,
-	})
-}
+// func NotesNamesGet(ctx *gin.Context, notes interface{}) {
+// 	//db := ctx.Value("database").(*sqlx.DB)
+// 	var notesNames = []string{}
+// 	for _, note := range notes {
+// 		notesNames = append(notesNames, fmt.Sprint(note))
+// 	}
+// 	ctx.HTML(http.StatusOK, "views/notes.html", gin.H{
+// 		"notesNames": notesNames,
+// 	})
+// }
 
-func NoteNames(ctx *gin.Context, notes []interface{}) {
-	//db := ctx.Value("database").(*sqlx.DB)
-	var notesNames = []string{}
-	for _, note := range notes {
-		notesNames = append(notesNames, fmt.Sprint(note))
-	}
-	ctx.HTML(http.StatusOK, "views/notes.html", gin.H{"notesNames": notesNames})
-}
+// func NoteNames(ctx *gin.Context, notes []interface{}) {
+// 	//db := ctx.Value("database").(*sqlx.DB)
+// 	var notesNames = []string{}
+// 	for _, note := range notes {
+// 		notesNames = append(notesNames, fmt.Sprint(note))
+// 	}
+// 	ctx.HTML(http.StatusOK, "views/notes.html", gin.H{"notesNames": notesNames})
+// }
