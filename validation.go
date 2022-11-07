@@ -11,10 +11,10 @@ var validStatuses = [5]string{"none", "in progress", "completed", "cancelled", "
 
 // Declare Patterns array
 var Patterns = map[string]string{`[a-zA-z]+`: "A sentence with a given prefix and/or suffix",
-	`[0-9\W]`: "A phone number with a given area code and optionally a consecutive sequence of numbers that are part of that number",
-	`@{1}`:    "An email address on a domain that is only partially provided",
+	`[0-9]`: "A phone number with a given area code and optionally a consecutive sequence of numbers that are part of that number",
+	`@{1}`:  "An email address on a domain that is only partially provided",
 	`meeting|minutes|agenda|action|attendees|apologies{3,}`: "Text that contains at least three of the following case-insensitive words: meeting, minutes, agenda, action, attendees, apologies",
-	`[A-Z]{3,}`: "A word in all capitals of three characters or more"}
+	`\\b[A-Z]{3,}\\b`: "A word in all capitals of three characters or more"}
 
 func validatePattern(pattern string, input string) (bool, string) {
 	isValid, returnMsg := false, ""

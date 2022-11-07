@@ -7,35 +7,24 @@ import (
 )
 
 func Router(r *gin.Engine) {
-	r.GET("/", index)
-	r.GET("/contact", contact)
-	r.GET("/about", about)
+	r.GET("/users", users)
+	r.GET("/notes", notes)
 }
 
-func index(c *gin.Context) {
+func users(c *gin.Context) {
 	c.HTML(
 		http.StatusOK,
-		"views/index.html",
+		"views/users.html",
 		gin.H{
-			"title": "Geeksbeginner",
+			"title": "Users",
 		},
 	)
 }
 
-func about(c *gin.Context) {
+func notes(c *gin.Context) {
 	c.HTML(
 		http.StatusOK,
-		"views/about.html",
+		"views/notes.html",
 		gin.H{},
-	)
-}
-
-func contact(c *gin.Context) {
-	c.HTML(
-		http.StatusOK,
-		"views/contact.html",
-		gin.H{
-			"title": "Contact",
-		},
 	)
 }

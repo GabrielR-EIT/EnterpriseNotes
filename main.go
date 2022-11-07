@@ -1,102 +1,46 @@
 package main
 
 import (
+	_ "enterprise-notes/webFunctions"
 	"fmt"
 	"log"
 	_ "log"
 	"strconv"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
-
 	_ "github.com/lib/pq"
 )
 
-// Create Structs
-type User struct {
-	ID            int    `json:"user_id"`
-	Name          string `json:"name"`
-	Read_Setting  bool   `json:"read_setting"`
-	Write_Setting bool   `json:"write_setting"`
-}
-
-type Note struct {
-	ID              int    `json:"note_id"`
-	Name            string `json:"name"`
-	Text            string `json:"text"`
-	Completion_Time string `json:"completion_date"`
-	Status          string `json:"status"`
-	//Delegation field should be a User struct
-	Delegation int `json:"delegation"`
-	// Shared_Users should be a slice of Users
-	Shared_Users string `json:"shared_users"`
-}
-
-type Association struct {
-	ID         int    `json:"association_id"`
-	UserID     int    `json:"user_id"`
-	NoteID     int    `json:"note_id"`
-	Permission string `json:"permission"`
-}
-
-// Create Slices
-var Users []User
-var Notes []Note
-var Associations []Association
-
+// --- User CRUD Functions ---//
 // Create User Function
-func createUser(userName string, userReadSetting bool, userWriteSetting bool) string {
+func createUser(db *sqlx.DB, userName string, userReadSetting bool, userWriteSetting bool) string {
 	returnMsg := ""
 
-	// Connect to the database
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-
-	// Ping the database for connectivity
-	db, err := sqlx.Open("postgres", psqlInfo)
-	if err != nil {
-		log.Println(err)
-	}
-	defer db.Close()
-	err = db.Ping()
-	if err != nil {
-		log.Println(err)
-	}
-
 	sqlQuery := fmt.Sprintf(`INSERT INTO users(userName, userReadSetting, userWriteSetting) VALUES ('%s', %t, %t);`, userName, userReadSetting, userWriteSetting)
-	_, err = db.Exec(sqlQuery)
+	_, err := db.Exec(sqlQuery)
 	if err != nil {
 		log.Printf("An error occurred when trying to create the user.\nGot %s\n", err)
 	}
 
 	// Create struct for new user
-	new_user := User{
+	newUser := User{
 		Name:          userName,
 		Read_Setting:  userReadSetting,
 		Write_Setting: userWriteSetting,
 	}
 
+	//webFunctions.CreateUser(db, newUser)
+
 	// Add new note struct to Notes slice
-	Users = append(Users, new_user)
-	returnMsg += fmt.Sprintf("A new user has been successfully added.\nDetails:\n%v\nThere are now %v users in the database.\n", new_user, strconv.Itoa(len(Users)))
+	Users = append(Users, newUser)
+	returnMsg += fmt.Sprintf("A new user has been successfully added.\nDetails:\n%v\nThere are now %v users in the database.\n", newUser, strconv.Itoa(len(Users)))
 	return returnMsg
 }
 
 // Read User Function
-func readUser(userID int) string {
+func readUser(db *sqlx.DB, userID int) string {
 	returnMsg := ""
-
-	// Connect to the database
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-
-	// Ping the database for connectivity
-	db, err := sqlx.Open("postgres", psqlInfo)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-	err = db.Ping()
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	var user User
 	sqlQuery := fmt.Sprintf(`SELECT * FROM users WHERE userID = %d`, userID)
@@ -105,61 +49,39 @@ func readUser(userID int) string {
 		log.Printf("An error occurred when reading user information.\nGot %s\n", queryRow)
 	}
 
+	//webFunctions.ReadUser(db, user)
+
 	returnMsg += fmt.Sprintf("User details:\n%v\n", user)
 	return returnMsg
 }
 
 // Update User Function
-func updateUser(userID int, userName string, userReadSetting bool, userWriteSetting bool) string {
+func updateUser(db *sqlx.DB, userID int, userName string, userReadSetting bool, userWriteSetting bool) string {
 	returnMsg := ""
 
-	// Connect to the database
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-
-	// Ping the database for connectivity
-	db, err := sqlx.Open("postgres", psqlInfo)
-	if err != nil {
-		log.Println(err)
-	}
-	defer db.Close()
-	err = db.Ping()
-	if err != nil {
-		log.Println(err)
-	}
-
 	sqlQuery := fmt.Sprintf(`UPDATE users SET userName = '%s', userReadSetting = %t, userWriteSetting = %t WHERE userID = %d`, userName, userReadSetting, userWriteSetting, userID)
-	_, err = db.Exec(sqlQuery)
+	_, err := db.Exec(sqlQuery)
 	if err != nil {
 		log.Printf("An error occurred when updating the user information.\nGot %s\n", err)
 	}
+
+	//webFunctions.UpdateUser(db, user)
 
 	returnMsg += "The user information has been successfully updated."
 	return returnMsg
 }
 
 // Delete User Function
-func deleteUser(userID int) string {
+func deleteUser(db *sqlx.DB, userID int) string {
 	returnMsg := ""
 
-	// Connect to the database
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-
-	// Ping the database for connectivity
-	db, err := sqlx.Open("postgres", psqlInfo)
-	if err != nil {
-		log.Println(err)
-	}
-	defer db.Close()
-	err = db.Ping()
-	if err != nil {
-		log.Println(err)
-	}
-
 	sqlQuery := fmt.Sprintf(`DELETE FROM users WHERE userID = %d;`, userID)
-	_, err = db.Exec(sqlQuery)
+	_, err := db.Exec(sqlQuery)
 	if err != nil {
 		log.Printf("An error occurred when trying to delete the user.\nGot %s\n", err)
 	}
+
+	//webFunctions.DeleteUser(db, userID)
 
 	//set the values of the user to null to remove it from the slice
 	Users[userID-1] = User{}
@@ -167,32 +89,19 @@ func deleteUser(userID int) string {
 	return returnMsg
 }
 
+// --- Note CRUD Functions ---//
 // Create Note Function
-func createNote(noteName string, noteText string, noteCompletionTime string, noteStatus string, noteDelegation int, noteSharedUsers string) string {
+func createNote(db *sqlx.DB, noteName string, noteText string, noteCompletionTime string, noteStatus string, noteDelegation int, noteSharedUsers string) string {
 	returnMsg := ""
 
-	// Connect to the database
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-
-	// Ping the database for connectivity
-	db, err := sqlx.Open("postgres", psqlInfo)
-	if err != nil {
-		log.Println(err)
-	}
-	defer db.Close()
-	err = db.Ping()
-	if err != nil {
-		log.Println(err)
-	}
-
 	sqlQuery := fmt.Sprintf(`INSERT INTO notes(noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers) VALUES ('%s', '%s', '%s', '%s', %d, ARRAY%s)`, noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers)
-	_, err = db.Exec(sqlQuery)
+	_, err := db.Exec(sqlQuery)
 	if err != nil {
 		log.Println("An error occurred when creating a new note.\nGot\n", err)
 	}
 
 	// Create struct for new note
-	new_note := Note{
+	newNote := Note{
 		Name:            noteName,
 		Text:            noteText,
 		Completion_Time: noteCompletionTime,
@@ -201,32 +110,20 @@ func createNote(noteName string, noteText string, noteCompletionTime string, not
 		Shared_Users:    noteSharedUsers,
 	}
 
-	// Add new note struct to Notes slice
-	Notes = append(Notes, new_note)
+	//webFunctions.CreateNote(db, newNote)
 
-	returnMsg += fmt.Sprintf("Your new note has been successfully added.\nDetails:\n%v\nThere are now %v notes in the database.", new_note, strconv.Itoa(len(Notes)))
+	// Add new note struct to Notes slice
+	Notes = append(Notes, newNote)
+
+	returnMsg += fmt.Sprintf("Your new note has been successfully added.\nDetails:\n%v\nThere are now %v notes in the database.", newNote, strconv.Itoa(len(Notes)))
 	return returnMsg
 
 	// Create an association between the user and note
 }
 
 // Read Note Function
-func readNote(noteID int) string {
+func readNote(db *sqlx.DB, noteID int) string {
 	returnMsg := ""
-
-	// Connect to the database
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-
-	// Ping the database for connectivity
-	db, err := sqlx.Open("postgres", psqlInfo)
-	if err != nil {
-		log.Println(err)
-	}
-	defer db.Close()
-	err = db.Ping()
-	if err != nil {
-		log.Println(err)
-	}
 
 	var note Note
 	sqlQuery := fmt.Sprintf(`SELECT * FROM notes WHERE noteID = %d`, noteID)
@@ -235,61 +132,39 @@ func readNote(noteID int) string {
 		log.Printf("An error occurred when reading the note.\nGot %s\n", queryRow)
 	}
 
+	//webFunctions.ReadNote(db, noteID)
+
 	returnMsg += fmt.Sprintf("Note details:\n%v\n", note)
 	return returnMsg
 }
 
 // Update Note Function
-func updateNote(noteID int, noteName string, noteText string, noteCompletionTime string, noteStatus string, noteDelegation int, noteSharedUsers string) string {
+func updateNote(db *sqlx.DB, noteID int, noteName string, noteText string, noteCompletionTime string, noteStatus string, noteDelegation int, noteSharedUsers string) string {
 	returnMsg := ""
 
-	// Connect to the database
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-
-	// Ping the database for connectivity
-	db, err := sqlx.Open("postgres", psqlInfo)
-	if err != nil {
-		log.Println(err)
-	}
-	defer db.Close()
-	err = db.Ping()
-	if err != nil {
-		log.Println(err)
-	}
-
 	sqlQuery := fmt.Sprintf(`UPDATE notes SET noteName = '%s', noteText = '%s', noteCompletionTime = '%s', noteStatus = '%s', noteDelegation = %d, noteSharedUsers = ARRAY%s WHERE noteID = %d`, noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers, noteID)
-	_, err = db.Exec(sqlQuery)
+	_, err := db.Exec(sqlQuery)
 	if err != nil {
 		log.Printf("An error occurred when updating the note.\nGot %s\n", err)
 	}
+
+	//webFunctions.CreateNote(db, note)
 
 	returnMsg += "The note has been successfully updated."
 	return returnMsg
 }
 
 // Delete Note Function
-func deleteNote(noteID int) string {
+func deleteNote(db *sqlx.DB, noteID int) string {
 	returnMsg := ""
 
-	// Connect to the database
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-
-	// Ping the database for connectivity
-	db, err := sqlx.Open("postgres", psqlInfo)
-	if err != nil {
-		log.Println(err)
-	}
-	defer db.Close()
-	err = db.Ping()
-	if err != nil {
-		log.Println(err)
-	}
-
 	sqlQuery := fmt.Sprintf(`DELETE FROM notes WHERE noteID = %d;`, noteID)
-	_, err = db.Exec(sqlQuery)
+	_, err := db.Exec(sqlQuery)
 	if err != nil {
 		log.Printf("An error occurred when trying to delete the note.\nGot %s\n", err)
 	}
+
+	//webFunctions.DeleteNote(db, noteID)
 
 	//set the values of the note to null to remove it from the slice
 	Notes[noteID-1] = Note{}
@@ -298,24 +173,11 @@ func deleteNote(noteID int) string {
 	return returnMsg
 }
 
+// --- Extended Note Functions ---//
 // Find Note Function
-func findNote(inputPattern string) (bool, string) {
+func findNote(db *sqlx.DB, inputPattern string) (bool, string) {
 	result := false
 	returnMsg := ""
-
-	// Connect to the database
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-
-	// Ping the database for connectivity
-	db, err := sqlx.Open("postgres", psqlInfo)
-	if err != nil {
-		log.Println(err)
-	}
-	defer db.Close()
-	err = db.Ping()
-	if err != nil {
-		log.Println(err)
-	}
 
 	sqlQuery := fmt.Sprintf(`SELECT * FROM notes WHERE noteText ~ '%s';`, inputPattern)
 	queryRows, err := db.Query(sqlQuery)
@@ -323,28 +185,16 @@ func findNote(inputPattern string) (bool, string) {
 		log.Printf("An error occurred when trying to find note text matching the given pattern.\nGot %s\n", err)
 	}
 
+	//webFunctions.ReadNote(db, noteID)
+
 	result = true
 	returnMsg += fmt.Sprintf("At least one match was successfully found for that pattern. Result:\n%v\n", queryRows)
 	return result, returnMsg
 }
 
 // Analyse Note Function
-func analyseNote(inputPattern string, noteID int) string {
+func analyseNote(db *sqlx.DB, inputPattern string, noteID int) string {
 	returnMsg := ""
-
-	// Connect to the database
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-
-	// Ping the database for connectivity
-	db, err := sqlx.Open("postgres", psqlInfo)
-	if err != nil {
-		log.Println(err)
-	}
-	defer db.Close()
-	err = db.Ping()
-	if err != nil {
-		log.Println(err)
-	}
 
 	sqlQuery := fmt.Sprintf(`SELECT count(*) FROM notes CROSS JOIN LATERAL regexp_matches(noteText, '%s', 'g') WHERE noteID = %d;`, inputPattern, noteID)
 	queryRows, err := db.Query(sqlQuery)
@@ -359,14 +209,35 @@ func analyseNote(inputPattern string, noteID int) string {
 		}
 	}
 
+	//webFunctions.ReadNote(db, noteID)
+
 	returnMsg += fmt.Sprintf("The analysis returned %v instances of \"%s\" in the text.", queryCount, inputPattern)
 	return returnMsg
 }
 
 // --- Main ---//
 func main() {
-	// go StartServer()
+	// Create the Enterprise Notes database
 	fmt.Print(CreateDB())
-	fmt.Print(CreateTables())
-	fmt.Print(PopulateTables())
+
+	// Connect to the database
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+
+	// Ping the database for connectivity
+	db, err := sqlx.Open("postgres", psqlInfo)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+	err = db.Ping()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Print(CreateTables(db))
+	fmt.Print(PopulateTables(db))
+
+	// Start the Gin router
+	router := gin.New()
+	go fmt.Print(StartServer(router, db))
 }

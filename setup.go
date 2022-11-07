@@ -1,29 +1,35 @@
 package main
 
 import (
+	"embed"
 	"encoding/json"
 	"fmt"
+	"html/template"
+	_ "html/template"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 )
 
 const (
+	// Database Info
 	host     = "localhost"
 	port     = 5432
 	user     = "postgres"
 	password = "postgres"
 	dbname   = "enterprisenotes"
+
+	// HTTP Info
+	page       = "/Enterprise_Notes/"
+	serverPort = ":8080"
 )
 
-// Create Struct for Test Data
-type Data struct {
-	Users        []User        `json:"users"`
-	Notes        []Note        `json:"notes"`
-	Associations []Association `json:"associations"`
-}
+//go:embed templates
+var tmplEmbed embed.FS
 
 // Connect to Database Function
 // func ConnectToDB() string {
@@ -47,6 +53,15 @@ type Data struct {
 // 	return returnMsg
 // }
 
+// Middleware to connect the database for each request that uses this
+// middleware.
+func connectDatabase(db *sqlx.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set("database", db)
+	}
+}
+
+// --- Database Functions --- //
 // Create Database Function
 func CreateDB() string {
 	var returnMsg string
@@ -85,22 +100,22 @@ func CreateDB() string {
 }
 
 // Create Tables Function
-func CreateTables() string {
+func CreateTables(db *sqlx.DB) string {
 	var returnMsg string
 
-	//Connect to the database
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+	// //Connect to the database
+	// psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
-	// Ping the database for connectivity
-	db, err := sqlx.Open("postgres", psqlInfo)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-	err = db.Ping()
-	if err != nil {
-		log.Fatal(err)
-	}
+	// // Ping the database for connectivity
+	// db, err := sqlx.Open("postgres", psqlInfo)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer db.Close()
+	// err = db.Ping()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	// Create the users table
 	sqlQuery := `DROP TABLE IF EXISTS users;
@@ -110,7 +125,7 @@ func CreateTables() string {
 		userReadSetting BOOL DEFAULT false, 
 		userWriteSetting BOOL DEFAULT false
 	);`
-	_, err = db.Exec(sqlQuery)
+	_, err := db.Exec(sqlQuery)
 	if err != nil {
 		log.Fatalf("An error occurred when creating the 'users' table.\nGot %s", err)
 	}
@@ -155,7 +170,7 @@ func CreateTables() string {
 }
 
 // Populate Tables Function
-func PopulateTables() string {
+func PopulateTables(db *sqlx.DB) string {
 	var returnMsg string
 
 	// Open the JSON Test Data
@@ -183,20 +198,20 @@ func PopulateTables() string {
 		Associations = append(Associations, data.Associations...)
 	}
 
-	// Connect to the database
-	const dbname = "enterprisenotes"
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+	// // Connect to the database
+	// const dbname = "enterprisenotes"
+	// psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
-	// Ping the database for connectivity
-	db, err := sqlx.Open("postgres", psqlInfo)
-	if err != nil {
-		log.Println(err)
-	}
-	defer db.Close()
-	err = db.Ping()
-	if err != nil {
-		log.Println(err)
-	}
+	// // Ping the database for connectivity
+	// db, err := sqlx.Open("postgres", psqlInfo)
+	// if err != nil {
+	// 	log.Println(err)
+	// }
+	// defer db.Close()
+	// err = db.Ping()
+	// if err != nil {
+	// 	log.Println(err)
+	// }
 
 	// Truncate the users, notes, and associations tables
 	sqlQuery := `TRUNCATE users, notes, associations RESTART IDENTITY CASCADE;`
@@ -209,14 +224,14 @@ func PopulateTables() string {
 
 	// Populate the users table
 	for _, user := range Users {
-		createUser(user.Name, user.Read_Setting, user.Write_Setting)
+		createUser(db, user.Name, user.Read_Setting, user.Write_Setting)
 	}
 
 	returnMsg += "The 'users' table was populated successfully.\n"
 
 	// Populate the notes table
 	for _, note := range Notes {
-		createNote(note.Name, note.Text, note.Completion_Time, note.Status, note.Delegation, note.Shared_Users)
+		createNote(db, note.Name, note.Text, note.Completion_Time, note.Status, note.Delegation, note.Shared_Users)
 	}
 
 	returnMsg += "The 'notes' table was populated successfully.\n"
@@ -233,5 +248,76 @@ func PopulateTables() string {
 	}
 
 	returnMsg += "The 'associations' table was populated successfully.\n"
+	return returnMsg
+}
+
+// Return all users as JSON
+func GetUsers(c *gin.Context) {
+	c.IndentedJSON(http.StatusOK, Users)
+}
+
+// Return all notes as JSON
+func GetNotes(c *gin.Context) {
+	c.IndentedJSON(http.StatusOK, Notes)
+}
+
+// --- HTTP Server Functions --- //
+// Start New Server Function
+func StartServer(router *gin.Engine, db *sqlx.DB) string {
+	returnMsg := ""
+
+	tmpl := template.Must(template.ParseFS(tmplEmbed, "templates/*/*.html"))
+	router.SetHTMLTemplate(tmpl)
+	router.Use(gin.Logger())
+	router.Use(gin.Recovery())
+
+	// router.GET("/users", webFunctions.ReadUsers(db))
+	// router.GET("/users/:guid", webFunctions.ReadUser(db))
+	// router.POST("/users", webFunctions.CreateUser(db))
+	// router.DELETE("/users/:guid", webFunctions.DeleteUser(db))
+	// router.PUT("/users/:guid", webFunctions.UpdateUser(db))
+
+	// router.GET("/notes", webFunctions.ReadNotes(db))
+	// router.GET("/notes/:guid", webFunctions.ReadNote(db))
+	// router.POST("/notes", webFunctions.CreateNote(db))
+	// router.DELETE("/notes/:guid", webFunctions.DeleteNote(db))
+	// router.PUT("/notes/:guid", webFunctions.UpdateNote(db))
+
+	router.Static("/css", "./static/css")
+	router.Static("/img", "./static/img")
+	router.Static("/scss", "./static/scss")
+	router.Static("/vendor", "./static/vendor")
+	router.Static("/js", "./static/js")
+	router.StaticFile("/favicon.ico", "./img/favicon.ico")
+
+	router.LoadHTMLFiles(
+		"./templates/views/users.html",
+		"./templates/views/notes.html",
+	)
+	//router.LoadHTMLGlob("templates/**/*")
+
+	router.Use(connectDatabase(db))
+	router.GET("/users", func(c *gin.Context) {
+		users := []User{}
+		c.HTML(http.StatusOK, "users.html", gin.H{
+			"Users": users,
+		})
+	})
+	router.GET("/notes", func(c *gin.Context) {
+		notes := []Note{}
+		c.HTML(http.StatusOK, "notes.html", gin.H{
+			"Notes": notes,
+		})
+	})
+	router.GET("/", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "/users/")
+	})
+
+	//controller.Router(router)
+
+	log.Println("Server started")
+	log.Fatalln(router.Run(serverPort)) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+
+	returnMsg += "The server has been successfully started."
 	return returnMsg
 }

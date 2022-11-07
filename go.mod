@@ -6,7 +6,6 @@ require github.com/lib/pq v1.10.7
 
 require (
 	github.com/gin-gonic/gin v1.8.1
-	github.com/sony/sonyflake v1.1.0
 )
 
 require (
@@ -15,6 +14,8 @@ require (
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.10.0 // indirect
 	github.com/goccy/go-json v0.9.7 // indirect
+	github.com/google/uuid v1.3.0 // indirect
+	github.com/jinzhu/copier v0.3.5 // indirect
 	github.com/jmoiron/sqlx v1.3.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
