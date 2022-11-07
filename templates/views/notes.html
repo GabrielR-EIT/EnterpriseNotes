@@ -9,48 +9,164 @@
       <div class="row">
         <div class="col-lg-4">
           <div class="features-icons-item mx-auto mb-0 mb-lg-3">
-            <div class="features-icons-icon d-flex">
-              <i class="icon-check m-auto text-primary"></i>
+            
+            <!-- Read a Note Form -->
+            <h3 class="text-dark">Read a Note</h3>
+
+            <!-- Note Select -->
+            <form id="readNoteForm" name="readNoteForm" action="/notes" method="GET">
+              <div class="form-group text-lg-left">
+                <label for="selectNote" class="text-dark">Select a Note.</label>
+
+              <div class="form-control">
+                <select id="selectNote" name="selectNote">
+                  {{ range .notes }}
+                <option class="noteName" action="/notes" method="GET">{{ .ID }}. {{ .Name }}</option>
+                {{ end }}
+              </select>
             </div>
-            <!-- Read/Edit a Note Form -->
-            <h3>Read/Edit a Note</h3>
-            <form>
-              <div class="form-group">
-                <label for="readNoteSelect">Select a Note.</label>
-              <!-- Note: Include notes in list for selection -->
-                <select class="form-control">
-                <option></option>
+            </form>
+            </div>
+        </div>
+
+        <!-- Edit a Note Form -->
+        <div class="col-lg-4">
+          <div class="features-icons-item mx-auto mb-0 mb-lg-3">
+
+            <h3 class="text-dark">Edit a Note</h3>
+
+            <!-- Note Select -->
+            <form id="editNoteForm" name="editNoteForm" action="/notes" method="PUT">
+              <div class="form-group text-lg-left">
+                <label for="selectNote" class="text-dark">Select a Note.</label>
+              <div class="form-control">
+                <select id="selectNote" name="selectNote">
+                  {{ range .notes }}
+                <option class="noteName">{{ .ID }}. {{ .Name }}</option>
+                {{ end }}
+              </select>
               </div>
-              <div class="form-group">
-                <label for="editPropertySelect">Select a Property to Edit.</label>
-              <select class="form-control">
-                <option>Name</option>
-                <option>Read_Setting</option>
-                <option>Write_Setting</option>
-                <option>[DELETE NOTE]</option>
+
+              <!-- Edit Note Properties -->
+                <label for="editProperties" class="text-dark">Edit the Note Properties.</label>
+
+                <!-- Edit Note Name -->
+              <div class="form-control">
+                <label class="text-dark">Name</label>
+                <input id="inputName" name="inputName">
               </div>
-              <div class="form-group">
-                <label for="editPropertyInput">Enter new property.</label>
-                <!-- Note: Make the input type differ depending on the chosen property -->
-                <div class="form-group mx-sm-3 mb-2">
-                  <label for="editPropertyInput" class="sr-only">Text</label>
-                  <input type="text" class="form-control" id="editPropertyInput" placeholder="Text">
+
+              <!-- Edit Note Text -->
+                <div class="form-control-lg">
+                <label class="text-dark">Text</label>
+                <textarea id="inputText" name="inputText" rows="3"></textarea>
+              </div>
+
+              <!-- Edit Note Status -->
+                <div class="form-control">
+                <label for="selectStatus" class="text-dark">Status</label>
+                <select id="selectStatus" name="selectStatus">
+                  {{ range .statuses }}
+                  <option class="status">{{ . }}</option>
+                  {{ end }}
+                  </select>
+              </div>
+
+              <!-- Edit Note Delegation -->
+              <div class="form-control">
+                <label class="text-dark">Delegation</label>
+                <select id="inputDelegation" name="inputDelegation">
+                  {{ range .users }}
+                  <option class="userName">{{ .ID }}. {{ .Name }}</option>
+                  {{ end }}
+                  </select>
+              </div>
+
+              <!-- Edit Note Shared Users -->
+              <div class="form-control">
+                <label class="text-dark">Shared Users</label>
+                <select id="inputSharedUsers" name="inputSharedUsers" multiple>
+                  {{ range .users }}
+                  <option class="userName">{{ .ID }}. {{ .Name }}</option>
+                  {{ end }}
+                </select>
+              </div>
+
+              <!-- Delete Note -->
+                <div class="form-control">
+                <label class="text-danger">[DELETE NOTE]</label>
+                <input type="checkbox" name="delete" id="delete" action="/notes" method="DELETE" onsubmit="return confirm('Are you sure you want to delete this note?');">
+              </div>
+
+              <!-- Confirm -->
+                <button type="submit" class="btn btn-primary mb-2">Confirm Changes</button>
                 </div>
-                <button type="submit" class="btn btn-primary mb-2">Confirm Change</button>
+              </form>
+              </div>
+
+            </div>
+
+        <div class="col-lg-4">
+          <div class="features-icons-item mx-auto mb-0 mb-lg-3">
+
+            <!-- Create a Note Form -->
+            <h3 class="text-dark">Create a Note</h3>
+
+            <form id="createNoteForm" name="createNoteForm" action="/notes" method="PUSH">
+              <div class="form-group text-lg-left">
+                <label for="editProperties" class="text-dark">Create the Note Properties.</label>
+
+              <div class="form-control">
+                <label class="text-dark">Name</label>
+                <input id="inputName" name="inputName" required>
+              </div>
+
+                <div class="form-control-lg">
+                <label class="text-dark">Text</label>
+                <textarea id="inputText" name="inputText" rows="3" required></textarea>
+              </div>
+
+                <div class="form-control">
+                <label for="selectStatus" class="text-dark">Status</label>
+                <select id="selectStatus" name="selectStatus">
+                  {{ range .statuses }}
+                  <option class="status">{{ . }}</option>
+                  {{ end }}
+                  </select>
+              </div>
+
+              <div class="form-control">
+                <label class="text-dark">Delegation</label>
+                <select id="inputDelegation" name="inputDelegation">
+                  {{ range .users }}
+                  <option class="userName">{{ .ID }}. {{ .Name }}</option>
+                  {{ end }}
+                  </select>
+              </div>
+
+              <div class="form-control">
+                <label class="text-dark">Shared Users</label>
+                <select id="inputSharedUsers" name="inputSharedUsers" multiple required>
+                  {{ range .users }}
+                  <option class="userName">{{ .ID }}. {{ .Name }}</option>
+                  {{ end }}
+                </select>
+                <button type="submit" class="btn btn-primary mb-2">Submit</button>
+                </div>
+
                 </div>
             </form>
             </div>
         </div>
       </div>
       <div class="container">
+
         <!-- Results Output -->
         <!-- Note: Make the output of each query appear in this area -->
-        <h3>Results</h3>
-        <form>
-          <div class="form-group">
-            <textarea class="form-control rounded-0" id="resultsTextArea" rows="10" disabled></textarea>
+        <h3 class="text-dark">Results</h3>
+          <div class="text-lg-left">
+            <textarea class="rounded-0" id="resultsTextArea" rows="10" readonly>{{ .notesResults }}</textarea>
           </div>
-        </form>
       </div>
     </div>
   </section>

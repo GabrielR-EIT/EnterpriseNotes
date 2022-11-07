@@ -30,28 +30,6 @@ const (
 //go:embed templates
 var tmplEmbed embed.FS
 
-// Connect to Database Function
-// func ConnectToDB() string {
-// 	var returnMsg string
-
-// 	// Connect to the database
-// 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s sslmode=disable", host, port, user, password)
-
-// 	// Ping the database for connectivity
-// 	db, err := sql.Open("postgres", psqlInfo)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	//defer db.Close()
-// 	err = db.Ping()
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-
-// 	returnMsg += "A successful PostgreSQL connection was made.\n"
-// 	return returnMsg
-// }
-
 // Middleware to connect the database for each request that uses this
 // middleware.
 func connectDatabase(db *sqlx.DB) gin.HandlerFunc {
@@ -101,20 +79,6 @@ func CreateDB() string {
 // Create Tables Function
 func CreateTables(db *sqlx.DB) string {
 	var returnMsg string
-
-	// //Connect to the database
-	// psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-
-	// // Ping the database for connectivity
-	// db, err := sqlx.Open("postgres", psqlInfo)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// defer db.Close()
-	// err = db.Ping()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
 
 	// Create the users table
 	sqlQuery := `DROP TABLE IF EXISTS users;
@@ -186,7 +150,7 @@ func PopulateTables(db *sqlx.DB) string {
 	data := Data{}
 	json.Unmarshal([]byte(byteValue), &data)
 
-	// Add the Test Data to Arrays
+	// Add the Test Data to Slices
 	for i := 0; i < len(data.Users); i++ {
 		Users = append(Users, data.Users...)
 	}
@@ -196,21 +160,6 @@ func PopulateTables(db *sqlx.DB) string {
 	for i := 0; i < len(data.Associations); i++ {
 		Associations = append(Associations, data.Associations...)
 	}
-
-	// // Connect to the database
-	// const dbname = "enterprisenotes"
-	// psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-
-	// // Ping the database for connectivity
-	// db, err := sqlx.Open("postgres", psqlInfo)
-	// if err != nil {
-	// 	log.Println(err)
-	// }
-	// defer db.Close()
-	// err = db.Ping()
-	// if err != nil {
-	// 	log.Println(err)
-	// }
 
 	// Truncate the users, notes, and associations tables
 	sqlQuery := `TRUNCATE users, notes, associations RESTART IDENTITY CASCADE;`
@@ -250,6 +199,7 @@ func PopulateTables(db *sqlx.DB) string {
 	return returnMsg
 }
 
+// --- API Functions --- //
 // Return all users as JSON
 func GetUsers(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, Users)
@@ -270,49 +220,18 @@ func StartServer(router *gin.Engine, db *sqlx.DB) string {
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 
-	// router.GET("/users", webFunctions.ReadUsers(db))
-	// router.GET("/users/:guid", webFunctions.ReadUser(db))
-	// router.POST("/users", webFunctions.CreateUser(db))
-	// router.DELETE("/users/:guid", webFunctions.DeleteUser(db))
-	// router.PUT("/users/:guid", webFunctions.UpdateUser(db))
-
-	// router.GET("/notes", webFunctions.ReadNotes(db))
-	// router.GET("/notes/:guid", webFunctions.ReadNote(db))
-	// router.POST("/notes", webFunctions.CreateNote(db))
-	// router.DELETE("/notes/:guid", webFunctions.DeleteNote(db))
-	// router.PUT("/notes/:guid", webFunctions.UpdateNote(db))
-
-	// router.Static("/css", "./static/css")
-	// router.Static("/img", "./static/img")
-	// router.Static("/scss", "./static/scss")
-	// router.Static("/vendor", "./static/vendor")
-	// router.Static("/js", "./static/js")
-	// router.StaticFile("/favicon.ico", "./img/favicon.ico")
-
-	// router.LoadHTMLFiles(
-	// 	"./templates/views/users.html",
-	// 	"./templates/views/notes.html",
-	// )
 	router.LoadHTMLGlob("templates/**/*")
 
 	router.Use(connectDatabase(db))
-	router.GET("/users", func(c *gin.Context) {
-		users := []User{}
-		c.HTML(http.StatusOK, "views/users.html", gin.H{
-			"Users": users,
-		})
+	router.GET("/users", func(ctx *gin.Context) {
+		ctx.HTML(http.StatusOK, "views/users.html", gin.H{"users": Users})
 	})
-	router.GET("/notes", func(c *gin.Context) {
-		notes := []Note{}
-		c.HTML(http.StatusOK, "views/notes.html", gin.H{
-			"Notes": notes,
-		})
+	router.GET("/notes", func(ctx *gin.Context) {
+		ctx.HTML(http.StatusOK, "views/notes.html", gin.H{"notes": Notes, "statuses": Statuses, "users": Users})
 	})
-	router.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusMovedPermanently, "/users/")
+	router.GET("/", func(ctx *gin.Context) {
+		ctx.Redirect(http.StatusMovedPermanently, "/users/")
 	})
-
-	//controller.Router(router)
 
 	log.Println("Server started")
 	log.Fatalln(router.Run(serverPort)) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")

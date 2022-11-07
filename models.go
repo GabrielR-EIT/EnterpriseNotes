@@ -36,3 +36,10 @@ type Data struct {
 var Users []User
 var Notes []Note
 var Associations []Association
+var Statuses = [5]string{
+	"none",
+	"in progress",
+	"completed",
+	"cancelled",
+	"delegated",
+}
