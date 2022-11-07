@@ -6,6 +6,7 @@
   <section class="features-icons bg-light text-center">
     <div class="container">
       <div class="row">
+
         <div class="col-lg-4">
           <div class="features-icons-item mx-auto mb-0 mb-lg-3">
 
@@ -19,8 +20,9 @@
 
               <div class="form-control">
                 <select id="selectUser" name="selectUser">
+                  <option class="userName" value="" disabled selected>[SELECT A USER]</option>
                   {{ range .users }}
-                <option class="UserName" action="/Users" method="GET">{{ .ID }}. {{ .Name }}</option>
+                <option class="userName" action="/Users" method="GET" value="{{ .ID }}">{{ .ID }}. {{ .Name }}</option>
                 {{ end }}
               </select>
             </div>
@@ -42,8 +44,9 @@
                 <label for="selectUser" class="text-dark">Select a User.</label>
               <div class="form-control">
                 <select id="selectUser" name="selectUser">
+                  <option class="userName" value="" disabled selected>[SELECT A USER]</option>
                   {{ range .users }}
-                <option class="UserName">{{ .ID }}. {{ .Name }}</option>
+                <option class="userName" value="{{ .ID }}">{{ .ID }}. {{ .Name }}</option>
                 {{ end }}
               </select>
             </div>
@@ -78,7 +81,7 @@
               </div>
 
               <!-- Confirm -->
-                <button type="submit" class="btn btn-primary mb-2">Confirm Changes</button>
+                <button type="submit" class="btn btn-primary mb-2 text-center">Confirm Changes</button>
 
                 </div>
               </form>
@@ -112,6 +115,9 @@
             <label class="text-dark" for="inputWriteSetting">Write Setting</label>
             <input type="checkbox" id="inputWriteSetting" name="inputWriteSetting">
           </div>
+
+          <!-- Confirm -->
+          <button type="submit" class="btn btn-primary mb-2 text-center">Submit</button>
         </div>
 
             </form>
@@ -122,9 +128,9 @@
       <!-- Results Output -->
       <!-- User: Make the output of each query appear in this area -->
       <div class="container">
-        <h3 class="text-dark text-lg-left">Results</h3>
+        <h3 class="text-dark">Results</h3>
           <div>
-            <textarea class="rounded-0" id="resultsTextArea" rows="10" readonly>{{ .UsersResults }}</textarea>
+            <textarea class="rounded-0 text-lg-left w-50 p-3" id="resultsTextArea" rows="10" readonly>{{ .UsersResults }}</textarea>
           </div>
       </div>
 
