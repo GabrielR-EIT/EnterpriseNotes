@@ -4,7 +4,6 @@ import (
 	_ "enterprise-notes/webFunctions"
 	"fmt"
 	"log"
-	_ "log"
 	"strconv"
 
 	"github.com/gin-gonic/gin"

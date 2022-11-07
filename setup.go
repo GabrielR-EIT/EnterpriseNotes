@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	_ "html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -283,29 +282,29 @@ func StartServer(router *gin.Engine, db *sqlx.DB) string {
 	// router.DELETE("/notes/:guid", webFunctions.DeleteNote(db))
 	// router.PUT("/notes/:guid", webFunctions.UpdateNote(db))
 
-	router.Static("/css", "./static/css")
-	router.Static("/img", "./static/img")
-	router.Static("/scss", "./static/scss")
-	router.Static("/vendor", "./static/vendor")
-	router.Static("/js", "./static/js")
-	router.StaticFile("/favicon.ico", "./img/favicon.ico")
+	// router.Static("/css", "./static/css")
+	// router.Static("/img", "./static/img")
+	// router.Static("/scss", "./static/scss")
+	// router.Static("/vendor", "./static/vendor")
+	// router.Static("/js", "./static/js")
+	// router.StaticFile("/favicon.ico", "./img/favicon.ico")
 
-	router.LoadHTMLFiles(
-		"./templates/views/users.html",
-		"./templates/views/notes.html",
-	)
-	//router.LoadHTMLGlob("templates/**/*")
+	// router.LoadHTMLFiles(
+	// 	"./templates/views/users.html",
+	// 	"./templates/views/notes.html",
+	// )
+	router.LoadHTMLGlob("templates/**/*")
 
 	router.Use(connectDatabase(db))
 	router.GET("/users", func(c *gin.Context) {
 		users := []User{}
-		c.HTML(http.StatusOK, "users.html", gin.H{
+		c.HTML(http.StatusOK, "views/users.html", gin.H{
 			"Users": users,
 		})
 	})
 	router.GET("/notes", func(c *gin.Context) {
 		notes := []Note{}
-		c.HTML(http.StatusOK, "notes.html", gin.H{
+		c.HTML(http.StatusOK, "views/notes.html", gin.H{
 			"Notes": notes,
 		})
 	})

@@ -94,7 +94,7 @@ func ReadUsers(db *sqlx.DB) gin.HandlerFunc {
 		for rows.Next() {
 			var user interface{}
 
-			if e := rows.Scan(fmt.Sprintf(`%v.userID, %v.userName, %v.userReadSetting, %v.userWriteSetting`, &user)); e != nil {
+			if e := rows.Scan(fmt.Sprintf(`%d.userID, %s.userName, %t.userReadSetting, %t.userWriteSetting`, &user)); e != nil {
 				var res = NewHTTPResponse(http.StatusInternalServerError, e)
 				c.JSON(http.StatusInternalServerError, res)
 				return
@@ -284,7 +284,7 @@ func ReadNotes(db *sqlx.DB) gin.HandlerFunc {
 		for rows.Next() {
 			var note interface{}
 
-			if e := rows.Scan(fmt.Sprintf(`%v.noteName, %v.noteText, %v.noteCompletionTime, %v.noteStatus, %v.noteDelegation`, &note)); e != nil {
+			if e := rows.Scan(fmt.Sprintf(`%d.noteID, %s.noteName, %s.noteText, %s.noteCompletionTime, %s.noteStatus, %d.noteDelegation, %v.noteSharedUsers`, &note)); e != nil {
 				var res = NewHTTPResponse(http.StatusInternalServerError, e)
 				c.JSON(http.StatusInternalServerError, res)
 				return
