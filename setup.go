@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
@@ -151,15 +152,9 @@ func PopulateTables(db *sqlx.DB) string {
 	json.Unmarshal([]byte(byteValue), &data)
 
 	// Add the Test Data to Slices
-	for i := 0; i < len(data.Users); i++ {
-		Users = append(Users, data.Users...)
-	}
-	for i := 0; i < len(data.Notes); i++ {
-		Notes = append(Notes, data.Notes...)
-	}
-	for i := 0; i < len(data.Associations); i++ {
-		Associations = append(Associations, data.Associations...)
-	}
+	Users = append(Users, data.Users...)
+	Notes = append(Notes, data.Notes...)
+	Associations = append(Associations, data.Associations...)
 
 	// Truncate the users, notes, and associations tables
 	sqlQuery := `TRUNCATE users, notes, associations RESTART IDENTITY CASCADE;`
@@ -210,6 +205,27 @@ func GetNotes(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, Notes)
 }
 
+func ReadNotes(db *sqlx.DB, res http.ResponseWriter, req *http.Request) string {
+	returnMsg := ""
+	err := req.ParseForm()
+	if err != nil {
+		log.Println("An error occurred when parsing form data.\nGot\n", err)
+	}
+	if req.FormValue("selectNote") == "all" {
+		for _, note := range Notes {
+			returnMsg += readNote(db, note.ID)
+		}
+	} else {
+		selectedNote, err := strconv.Atoi(req.FormValue("selectNote"))
+		if err != nil {
+			log.Println("An error occurred when parsing form data.\nGot\n", err)
+		}
+		returnMsg += readNote(db, selectedNote)
+	}
+	fmt.Println(returnMsg)
+	return returnMsg
+}
+
 // --- HTTP Server Functions --- //
 // Start New Server Function
 func StartServer(router *gin.Engine, db *sqlx.DB) string {
@@ -225,12 +241,13 @@ func StartServer(router *gin.Engine, db *sqlx.DB) string {
 	router.Use(connectDatabase(db))
 	router.GET("/users", func(ctx *gin.Context) {
 		ctx.HTML(http.StatusOK, "views/users.html", gin.H{"users": Users})
+		ctx.HTML(http.StatusOK, "views/users.html", gin.H{"result": "test, this is a test"})
 	})
 	router.GET("/notes", func(ctx *gin.Context) {
 		ctx.HTML(http.StatusOK, "views/notes.html", gin.H{"notes": Notes, "statuses": Statuses, "users": Users})
 	})
 	router.GET("/", func(ctx *gin.Context) {
-		ctx.Redirect(http.StatusMovedPermanently, "/users/")
+		ctx.Redirect(http.StatusSeeOther, "/users/")
 	})
 
 	log.Println("Server started")

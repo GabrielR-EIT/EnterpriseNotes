@@ -22,11 +22,16 @@
               <div class="form-control">
                 <select id="selectNote" name="selectNote">
                   <option class="noteName" value="" disabled selected>[SELECT A NOTE]</option>
+                  <option id="showAll" class="noteName" value="all">Show All Notes</option>
                   {{ range .notes }}
                 <option class="noteName" action="/notes" method="GET" value="{{ .ID }}">{{ .ID }}. {{ .Name }}</option>
                 {{ end }}
               </select>
             </div>
+
+            <!-- Confirm -->
+            <button type="submit" class="btn btn-primary mb-2 text-center">Show</button>
+
             </div>
             </form>
             </div>
@@ -174,7 +179,7 @@
         <div class="container">
         <h3 class="text-dark">Results</h3>
           <div>
-            <textarea class="rounded-0  text-lg-left w-50 p-3" id="resultsTextArea" rows="10 " readonly>{{ .notesResults }}</textarea>
+            <textarea class="rounded-0  text-lg-left w-50 p-3" id="result" name="result" rows="10 " readonly>{{ .result }}</textarea>
           </div>
       </div>
     </div>
