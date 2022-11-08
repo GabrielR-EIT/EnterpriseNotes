@@ -29,8 +29,6 @@ func createUser(db *sqlx.DB, userName string, userReadSetting bool, userWriteSet
 		Write_Setting: userWriteSetting,
 	}
 
-	//webFunctions.CreateUser(db, newUser)
-
 	// Add new note struct to Notes slice
 	Users = append(Users, newUser)
 	returnMsg += fmt.Sprintf("A new user has been successfully added.\nDetails:\n%v\nThere are now %v users in the database.\n", newUser, strconv.Itoa(len(Users)))
@@ -43,12 +41,10 @@ func readUser(db *sqlx.DB, userID int) string {
 
 	var user User
 	sqlQuery := fmt.Sprintf(`SELECT * FROM users WHERE userID = %d`, userID)
-	queryRow := db.QueryRowx(sqlQuery).StructScan(&user)
+	queryRow := db.Get(&user, sqlQuery)
 	if queryRow != nil {
 		log.Printf("An error occurred when reading user information.\nGot %s\n", queryRow)
 	}
-
-	//webFunctions.ReadUser(db, user)
 
 	returnMsg += fmt.Sprintf("User details:\n%v\n", user)
 	return returnMsg
@@ -64,8 +60,6 @@ func updateUser(db *sqlx.DB, userID int, userName string, userReadSetting bool, 
 		log.Printf("An error occurred when updating the user information.\nGot %s\n", err)
 	}
 
-	//webFunctions.UpdateUser(db, user)
-
 	returnMsg += "The user information has been successfully updated."
 	return returnMsg
 }
@@ -79,8 +73,6 @@ func deleteUser(db *sqlx.DB, userID int) string {
 	if err != nil {
 		log.Printf("An error occurred when trying to delete the user.\nGot %s\n", err)
 	}
-
-	//webFunctions.DeleteUser(db, userID)
 
 	//set the values of the user to null to remove it from the slice
 	Users[userID-1] = User{}
@@ -109,8 +101,6 @@ func createNote(db *sqlx.DB, noteName string, noteText string, noteCompletionTim
 		Shared_Users:    noteSharedUsers,
 	}
 
-	//webFunctions.CreateNote(db, newNote)
-
 	// Add new note struct to Notes slice
 	Notes = append(Notes, newNote)
 
@@ -126,12 +116,10 @@ func readNote(db *sqlx.DB, noteID int) string {
 
 	var note Note
 	sqlQuery := fmt.Sprintf(`SELECT * FROM notes WHERE noteID = %d`, noteID)
-	queryRow := db.QueryRowx(sqlQuery).StructScan(&note)
+	queryRow := db.Get(&note, sqlQuery)
 	if queryRow != nil {
 		log.Printf("An error occurred when reading the note.\nGot %s\n", queryRow)
 	}
-
-	//webFunctions.ReadNote(db, noteID)
 
 	returnMsg += fmt.Sprintf("Note details:\n%v\n", note)
 	return returnMsg
@@ -147,8 +135,6 @@ func updateNote(db *sqlx.DB, noteID int, noteName string, noteText string, noteC
 		log.Printf("An error occurred when updating the note.\nGot %s\n", err)
 	}
 
-	//webFunctions.CreateNote(db, note)
-
 	returnMsg += "The note has been successfully updated."
 	return returnMsg
 }
@@ -162,8 +148,6 @@ func deleteNote(db *sqlx.DB, noteID int) string {
 	if err != nil {
 		log.Printf("An error occurred when trying to delete the note.\nGot %s\n", err)
 	}
-
-	//webFunctions.DeleteNote(db, noteID)
 
 	//set the values of the note to null to remove it from the slice
 	Notes[noteID-1] = Note{}
@@ -183,8 +167,6 @@ func findNote(db *sqlx.DB, inputPattern string) (bool, string) {
 	if err != nil {
 		log.Printf("An error occurred when trying to find note text matching the given pattern.\nGot %s\n", err)
 	}
-
-	//webFunctions.ReadNote(db, noteID)
 
 	result = true
 	returnMsg += fmt.Sprintf("At least one match was successfully found for that pattern. Result:\n%v\n", queryRows)
@@ -207,8 +189,6 @@ func analyseNote(db *sqlx.DB, inputPattern string, noteID int) string {
 			log.Printf("An error occurred when trying to retrieve the count of pattern matches.\nGot %s\n", err)
 		}
 	}
-
-	//webFunctions.ReadNote(db, noteID)
 
 	returnMsg += fmt.Sprintf("The analysis returned %v instances of \"%s\" in the text.", queryCount, inputPattern)
 	return returnMsg

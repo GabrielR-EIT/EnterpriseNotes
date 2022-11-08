@@ -85,7 +85,7 @@ func TestReadUser(t *testing.T) {
 	fmt.Print(PopulateTables(db))
 
 	var user User
-	db.QueryRowx(`SELECT * FROM users WHERE userID = 1`).StructScan(&user)
+	db.Get(&user, `SELECT * FROM users WHERE userID = 1`)
 	got := readUser(db, 1)
 	want := fmt.Sprintf("User details:\n%v\n", user)
 
@@ -222,7 +222,7 @@ func TestReadNote(t *testing.T) {
 	fmt.Print(PopulateTables(db))
 
 	var note Note
-	db.QueryRowx(`SELECT * FROM notes WHERE noteID = 1`).StructScan(&note)
+	db.Get(&note, `SELECT * FROM notes WHERE noteID = 1`)
 	got := readNote(db, 1)
 	want := fmt.Sprintf("Note details:\n%v\n", note)
 

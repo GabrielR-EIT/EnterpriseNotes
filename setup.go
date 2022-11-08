@@ -1,7 +1,6 @@
 package main
 
 import (
-	"embed"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -9,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
@@ -27,17 +25,6 @@ const (
 	page       = "/Enterprise_Notes/"
 	serverPort = ":8080"
 )
-
-//go:embed templates
-var tmplEmbed embed.FS
-
-// Middleware to connect the database for each request that uses this
-// middleware.
-func connectDatabase(db *sqlx.DB) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Set("database", db)
-	}
-}
 
 // --- Database Functions --- //
 // Create Database Function
@@ -183,7 +170,6 @@ func PopulateTables(db *sqlx.DB) string {
 	for _, association := range Associations {
 		//newID++
 		sqlQuery := fmt.Sprintf(`INSERT INTO associations (userID, noteID, associationPerm) VALUES (%d, %d, '%s')`, association.UserID, association.NoteID, association.Permission)
-		fmt.Println(sqlQuery)
 		_, err = db.Exec(sqlQuery)
 		if err != nil {
 			log.Printf("An error occurred when populating the 'associations' table.\nGot %s\n", err)
@@ -195,36 +181,6 @@ func PopulateTables(db *sqlx.DB) string {
 }
 
 // --- API Functions --- //
-// Return all users as JSON
-func GetUsers(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, Users)
-}
-
-// Return all notes as JSON
-func GetNotes(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, Notes)
-}
-
-func ReadNotes(db *sqlx.DB, res http.ResponseWriter, req *http.Request) string {
-	returnMsg := ""
-	err := req.ParseForm()
-	if err != nil {
-		log.Println("An error occurred when parsing form data.\nGot\n", err)
-	}
-	if req.FormValue("selectNote") == "all" {
-		for _, note := range Notes {
-			returnMsg += readNote(db, note.ID)
-		}
-	} else {
-		selectedNote, err := strconv.Atoi(req.FormValue("selectNote"))
-		if err != nil {
-			log.Println("An error occurred when parsing form data.\nGot\n", err)
-		}
-		returnMsg += readNote(db, selectedNote)
-	}
-	fmt.Println(returnMsg)
-	return returnMsg
-}
 
 // --- HTTP Server Functions --- //
 // Start New Server Function
@@ -241,9 +197,8 @@ func StartServer(router *gin.Engine, db *sqlx.DB) string {
 	router.Use(connectDatabase(db))
 	router.GET("/users", func(ctx *gin.Context) {
 		ctx.HTML(http.StatusOK, "views/users.html", gin.H{"users": Users})
-		ctx.HTML(http.StatusOK, "views/users.html", gin.H{"result": "test, this is a test"})
 	})
-	router.GET("/notes", func(ctx *gin.Context) {
+	router.GET("/notes", handlerReadNotes, func(ctx *gin.Context) {
 		ctx.HTML(http.StatusOK, "views/notes.html", gin.H{"notes": Notes, "statuses": Statuses, "users": Users})
 	})
 	router.GET("/", func(ctx *gin.Context) {

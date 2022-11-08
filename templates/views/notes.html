@@ -1,6 +1,5 @@
 {{ define "views/notes.html" }}
 
-<!--Embed the header.html template at this location-->
 {{ template "layouts/header.html" .}}
 
 <header class="masthead text-white text-center">
@@ -15,8 +14,8 @@
             <h3 class="text-dark">Read a Note</h3>
 
             <!-- Note Select -->
-            <form id="readNoteForm" name="readNoteForm" action="/notes" method="GET">
-              <div class="form-group text-lg-left">
+            <form id="readNoteForm" name="readNoteForm" action="/notes" target="_self" method="GET">
+              <div class="form-group">
                 <label for="selectNote" class="text-dark">Select a Note.</label>
 
               <div class="form-control">
@@ -24,7 +23,7 @@
                   <option class="noteName" value="" disabled selected>[SELECT A NOTE]</option>
                   <option id="showAll" class="noteName" value="all">Show All Notes</option>
                   {{ range .notes }}
-                <option class="noteName" action="/notes" method="GET" value="{{ .ID }}">{{ .ID }}. {{ .Name }}</option>
+                <option class="noteName" value="{{ .ID }}">{{ .ID }}. {{ .Name }}</option>
                 {{ end }}
               </select>
             </div>
@@ -44,7 +43,7 @@
             <h3 class="text-dark">Edit a Note</h3>
 
             <!-- Note Select -->
-            <form id="editNoteForm" name="editNoteForm" action="/notes" method="PUT">
+            <form id="editNoteForm" name="editNoteForm" action="/notes" target="_self" method="PUT">
               <div class="form-group text-lg-left">
                 <label for="selectNote" class="text-dark">Select a Note.</label>
               <div class="form-control">
@@ -62,7 +61,7 @@
                 <!-- Edit Note Name -->
               <div class="form-control">
                 <label class="text-dark">Name</label>
-                <input id="inputName" name="inputName">
+                <input id="inputName" name="inputName" pattern="">
               </div>
 
               <!-- Edit Note Text -->
@@ -122,7 +121,7 @@
             <!-- Create a Note Form -->
             <h3 class="text-dark">Create a Note</h3>
 
-            <form id="createNoteForm" name="createNoteForm" action="/notes" method="PUSH">
+            <form id="createNoteForm" name="createNoteForm" action="/notes" target="_self" method="PUSH">
               <div class="form-group text-lg-left">
                 <label for="editProperties" class="text-dark">Create the Note Properties.</label>
 
@@ -179,7 +178,7 @@
         <div class="container">
         <h3 class="text-dark">Results</h3>
           <div>
-            <textarea class="rounded-0  text-lg-left w-50 p-3" id="result" name="result" rows="10 " readonly>{{ .result }}</textarea>
+            <textarea class="rounded-0  text-lg-left w-50 p-3" id="results" name="results" rows="10 " readonly>{{ .results }}</textarea>
           </div>
       </div>
     </div>

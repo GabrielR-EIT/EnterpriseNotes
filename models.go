@@ -2,27 +2,27 @@ package main
 
 // Create Structs
 type User struct {
-	ID            int    `json:"user_id"`
-	Name          string `json:"name"`
-	Read_Setting  bool   `json:"read_setting"`
-	Write_Setting bool   `json:"write_setting"`
+	ID            int    `json:"user_id" db:"userid"`
+	Name          string `json:"name" db:"username"`
+	Read_Setting  bool   `json:"read_setting" db:"userreadsetting"`
+	Write_Setting bool   `json:"write_setting" db:"userwritesetting"`
 }
 
 type Note struct {
-	ID              int    `json:"note_id"`
-	Name            string `json:"name"`
-	Text            string `json:"text"`
-	Completion_Time string `json:"completion_date"`
-	Status          string `json:"status"`
-	Delegation      int    `json:"delegation"`
-	Shared_Users    string `json:"shared_users"`
+	ID              int    `json:"note_id" db:"noteid"`
+	Name            string `json:"name" db:"notename"`
+	Text            string `json:"text" db:"notetext"`
+	Completion_Time string `json:"completion_date" db:"notecompletiontime"`
+	Status          string `json:"status" db:"notestatus"`
+	Delegation      int    `json:"delegation" db:"notedelegation"`
+	Shared_Users    string `json:"shared_users" db:"notesharedusers"`
 }
 
 type Association struct {
-	ID         int    `json:"association_id"`
-	UserID     int    `json:"user_id"`
-	NoteID     int    `json:"note_id"`
-	Permission string `json:"permission"`
+	ID         int    `json:"association_id" db:"associationid"`
+	UserID     int    `json:"user_id" db:"userid"`
+	NoteID     int    `json:"note_id" db:"noteid"`
+	Permission string `json:"permission" db:"associationpermission"`
 }
 
 // Create Struct for Test Data

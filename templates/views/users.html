@@ -1,5 +1,5 @@
 {{ define "views/users.html" }}
-<!--Embed the header.html template at this location-->
+
 {{ template "layouts/header.html" .}}
 
 <header class="masthead text-white text-center">
@@ -14,16 +14,16 @@
             <h3 class="text-dark">Read a User</h3>
 
             <!-- User Select -->
-            <form id="readUserForm" name="readUserForm" action="/Users" target="_self" method="GET">
+            <form id="readUserForm" name="readUserForm" action="/users" target="_self" method="GET">
               <div class="form-group">
                 <label for="selectUser" class="text-dark">Select a User.</label>
 
               <div class="form-control">
                 <select id="selectUser" name="selectUser">
                   <option class="userName" value="" disabled selected>[SELECT A USER]</option>
-                  <option class="noteName" value="all" action="/Users" method="GET">Show All Users</option>
+                  <option class="noteName" value="all">Show All Users</option>
                   {{ range .users }}
-                <option class="userName" action="/Users" method="GET" value="{{ .ID }}">{{ .ID }}. {{ .Name }}</option>
+                <option class="userName" value="{{ .ID }}">{{ .ID }}. {{ .Name }}</option>
                 {{ end }}
               </select>
             </div>
@@ -44,7 +44,7 @@
             <h3 class="text-dark">Edit a User</h3>
             
             <!-- User Select -->
-            <form id="editUserForm" name="editUserForm" action="/Users" target="_self" method="PUT">
+            <form id="editUserForm" name="editUserForm" action="/users" target="_self" method="PUT">
               <div class="form-group">
                 <label for="selectUser" class="text-dark">Select a User.</label>
               <div class="form-control">
@@ -82,7 +82,7 @@
           <!-- Delete User -->
                 <div class="form-control">
                 <label class="text-danger">[DELETE USER]</label>
-                <input type="checkbox" name="delete" id="delete" action="/Users" method="DELETE" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                <input type="checkbox" name="delete" id="delete" action="/users" method="DELETE" onsubmit="return confirm('Are you sure you want to delete this user?');">
               </div>
 
               <!-- Confirm -->
@@ -99,7 +99,7 @@
             
             <h3 class="text-dark">Create a User</h3>
 
-            <form id="createUserForm" name="createUserForm" action="/Users" target="_self" method="PUSH">
+            <form id="createUserForm" name="createUserForm" action="/users" target="_self" method="PUSH">
               <div class="form-group">
                 <label for="editProperties" class="text-dark">Create the User Properties.</label>
 
@@ -135,7 +135,7 @@
       <div class="container">
         <h3 class="text-dark">Results</h3>
           <div>
-            <textarea class="rounded-0 text-lg-left w-50 p-3" id="result" name="result" rows="10 " readonly>{{ .result }}</textarea>
+            <textarea class="rounded-0 text-lg-left w-50 p-3" id="results" name="results" rows="10 " readonly>{{ .results }}</textarea>
           </div>
       </div>
 
