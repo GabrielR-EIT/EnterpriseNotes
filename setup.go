@@ -203,7 +203,10 @@ func StartServer(router *gin.Engine, db *sqlx.DB) string {
 	router.POST("/notes/put", handlerUpdateNote)
 	// Redirect the user to the Users page
 	router.GET("/", func(ctx *gin.Context) {
-		ctx.Redirect(http.StatusSeeOther, "/users/")
+		ctx.Redirect(http.StatusSeeOther, "/users")
+	})
+	router.GET("/notes/put", func(ctx *gin.Context) {
+		ctx.Redirect(http.StatusSeeOther, "/notes")
 	})
 
 	log.Println("Server started")

@@ -44,7 +44,7 @@
 
             <!-- Note Select -->
             <form id="editNoteForm" name="editNoteForm" action="/notes/put" method="POST">
-              <div class="form-group text-lg-left">
+              <div class="form-group">
                 <label for="selectNote" class="text-dark">Select a Note.</label>
               <div class="form-control">
                 <select id="selectNote" name="selectNote" required>
@@ -65,7 +65,7 @@
               </div>
 
               <!-- Edit Note Text -->
-                <div class="form-control-lg">
+                <div class="form-control" style="margin-bottom: 52px">
                 <label class="text-dark">Text</label>
                 <textarea id="inputText" name="inputText" rows="3"></textarea>
               </div>
@@ -92,7 +92,7 @@
               </div>
 
               <!-- Edit Note Shared Users -->
-              <div class="form-control">
+              <div class="form-control" style="margin-bottom: 52px">
                 <label class="text-dark">Shared Users</label>
                 <select id="inputSharedUsers" name="inputSharedUsers" multiple>
                   {{ range .users }}
@@ -122,7 +122,7 @@
             <h3 class="text-dark">Create a Note</h3>
 
             <form id="createNoteForm" name="createNoteForm" action="/notes" method="POST">
-              <div class="form-group text-lg-left">
+              <div class="form-group">
                 <label for="editProperties" class="text-dark">Create the Note Properties.</label>
 
               <div class="form-control">
@@ -130,7 +130,7 @@
                 <input id="inputName" name="inputName" required>
               </div>
 
-                <div class="form-control-lg">
+                <div class="form-control" style="margin-bottom: 52px">
                 <label class="text-dark">Text</label>
                 <textarea id="inputText" name="inputText" rows="3" required></textarea>
               </div>
@@ -178,7 +178,7 @@
         <div class="container">
         <h3 class="text-dark">Results</h3>
           <div>
-            <textarea class="rounded-0  text-lg-left w-50 p-3" id="results" name="results" rows="10 " readonly>{{ .results }}</textarea>
+            <textarea class="rounded-0  w-50 p-3" id="results" name="results" rows="10 " readonly>{{ .results }}</textarea>
           </div>
       </div>
     </div>

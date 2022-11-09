@@ -49,6 +49,7 @@ func handlerLoadData(ctx *gin.Context, results string, location string) {
 	ctx.Redirect(http.StatusFound, location)
 }
 
+// --- CRUD Handlers --- //
 // Create User Handler
 func handlerCreateUser(ctx *gin.Context) {
 	results := ""
