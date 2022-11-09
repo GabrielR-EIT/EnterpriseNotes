@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
@@ -82,14 +83,16 @@ func deleteUser(db *sqlx.DB, userID int) string {
 
 // --- Note CRUD Functions ---//
 // Create Note Function
-func createNote(db *sqlx.DB, noteName string, noteText string, noteCompletionTime string, noteStatus string, noteDelegation int, noteSharedUsers string) string {
+func createNote(db *sqlx.DB, noteName string, noteText string, noteStatus string, noteDelegation int, noteSharedUsers string) string {
 	returnMsg := ""
 
-	sqlQuery := fmt.Sprintf(`INSERT INTO notes(noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers) VALUES ('%s', '%s', '%s', '%s', %d, ARRAY%s)`, noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers)
+	sqlQuery := fmt.Sprintf(`INSERT INTO notes(noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers) VALUES ('%s', '%s', NOW(), '%s', %d, ARRAY%s)`, noteName, noteText, noteStatus, noteDelegation, noteSharedUsers)
 	_, err := db.Exec(sqlQuery)
 	if err != nil {
 		log.Println("An error occurred when creating a new note.\nGot\n", err)
 	}
+
+	noteCompletionTime := fmt.Sprint(time.Now().Round(60 * time.Second))
 
 	// Create struct for new note
 	newNote := Note{

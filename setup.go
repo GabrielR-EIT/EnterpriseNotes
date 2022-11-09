@@ -161,7 +161,7 @@ func PopulateTables(db *sqlx.DB) string {
 
 	// Populate the notes table
 	for _, note := range Notes {
-		createNote(db, note.Name, note.Text, note.Completion_Time, note.Status, note.Delegation, note.Shared_Users)
+		createNote(db, note.Name, note.Text, note.Status, note.Delegation, note.Shared_Users)
 	}
 
 	returnMsg += "The 'notes' table was populated successfully.\n"
@@ -197,6 +197,8 @@ func StartServer(router *gin.Engine, db *sqlx.DB) string {
 	router.Use(connectDatabase(db))
 	router.GET("/users", handlerReadUsers)
 	router.GET("/notes", handlerReadNotes)
+	router.POST("/users", handlerCreateUser)
+	router.POST("/notes", handlerCreateNote)
 	// Redirect the user to the Users page
 	router.GET("/", func(ctx *gin.Context) {
 		ctx.Redirect(http.StatusSeeOther, "/users/")

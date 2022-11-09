@@ -31,6 +31,40 @@ func connectDatabase(db *sqlx.DB) gin.HandlerFunc {
 // 	ctx.IndentedJSON(http.StatusOK, Notes)
 // }
 
+// Create User Handler
+func handlerCreateUser(ctx *gin.Context) {
+	results := ""
+	db := ctx.Value("database").(*sqlx.DB)
+
+	// Parse the HTTP Response for Selected User
+	ctx.Request.ParseForm()
+	inputName := ctx.PostForm("inputName")
+	inputReadSetting := ctx.GetBool(ctx.PostForm("inputReadSetting"))
+	inputWriteSetting := ctx.GetBool(ctx.PostForm("inputWriteSetting"))
+	results += createUser(db, inputName, inputReadSetting, inputWriteSetting)
+	// Update the form data
+	ctx.HTML(http.StatusOK, "views/users.html", gin.H{"users": Users, "results": results})
+	ctx.Redirect(http.StatusFound, "views/users.html")
+}
+
+// Create Note Handler
+func handlerCreateNote(ctx *gin.Context) {
+	results := ""
+	db := ctx.Value("database").(*sqlx.DB)
+
+	// Parse the HTTP Response for Selected User
+	ctx.Request.ParseForm()
+	inputName := ctx.PostForm("inputName")
+	inputText := ctx.PostForm("inputText")
+	inputStatus := ctx.PostForm("inputStatus")
+	inputDelegation := ctx.GetInt(ctx.PostForm("inputDelegation"))
+	inputSharedUsers := ctx.PostForm("inputSharedUsers")
+	results += createNote(db, inputName, inputText, inputStatus, inputDelegation, inputSharedUsers)
+	// Update the form data
+	ctx.HTML(http.StatusOK, "views/users.html", gin.H{"users": Users, "results": results})
+	ctx.Redirect(http.StatusFound, "views/users.html")
+}
+
 // Read Users Handler
 func handlerReadUsers(ctx *gin.Context) {
 	results := ""

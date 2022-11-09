@@ -183,15 +183,15 @@ func TestCreateNote(t *testing.T) {
 
 	// Create Note Data
 	test_note := Note{
-		Name:            "test note",
-		Text:            "test text",
-		Completion_Time: "CURRENT_TIMESTAMP",
-		Status:          "completed",
-		Delegation:      1,
-		Shared_Users:    "[6, 1]",
+		Name: "test note",
+		Text: "test text",
+		// Completion_Time: fmt.Sprint(time.Now().Round(60 * time.Second)),
+		Status:       "completed",
+		Delegation:   1,
+		Shared_Users: "[6, 1]",
 	}
 
-	got := createNote(db, test_note.Name, test_note.Text, test_note.Completion_Time, test_note.Status, test_note.Delegation, test_note.Shared_Users)
+	got := createNote(db, test_note.Name, test_note.Text, test_note.Status, test_note.Delegation, test_note.Shared_Users)
 	want := fmt.Sprintf("Your new note has been successfully added.\nDetails:\n%v\nThere are now %v notes in the database.", test_note, strconv.Itoa(len(Notes)))
 
 	if got != want {
