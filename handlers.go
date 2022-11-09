@@ -22,6 +22,33 @@ func connectDatabase(db *sqlx.DB) gin.HandlerFunc {
 	}
 }
 
+// Load Data Handler
+func handlerLoadData(ctx *gin.Context, results string, location string) {
+	db := ctx.Value("database").(*sqlx.DB)
+
+	foundUsers := []User{}
+	sqlQuery := `SELECT * FROM users;`
+	err := db.Select(&foundUsers, sqlQuery)
+	if err != nil {
+		log.Printf("An error occurred when trying to return data from the users table.\nGot %s\n", err)
+	}
+
+	foundNotes := []Note{}
+	sqlQuery = `SELECT * FROM notes;`
+	err = db.Select(&foundNotes, sqlQuery)
+	if err != nil {
+		log.Printf("An error occurred when trying to return data from the notes table.\nGot %s\n", err)
+	}
+
+	if location == "views/users.html" {
+		ctx.HTML(http.StatusOK, "views/users.html", gin.H{"users": foundUsers, "results": results})
+	}
+	if location == "views/notes.html" {
+		ctx.HTML(http.StatusOK, "views/notes.html", gin.H{"notes": foundNotes, "statuses": Statuses, "users": foundUsers, "results": results})
+	}
+	ctx.Redirect(http.StatusFound, location)
+}
+
 // Create User Handler
 func handlerCreateUser(ctx *gin.Context) {
 	results := ""
@@ -30,14 +57,12 @@ func handlerCreateUser(ctx *gin.Context) {
 	// Parse the HTTP Response for Selected User
 	ctx.Request.ParseForm()
 	inputName := ctx.PostForm("inputName")
-	inputReadSetting := ctx.GetBool(ctx.PostForm("inputReadSetting"))
-	inputWriteSetting := ctx.GetBool(ctx.PostForm("inputWriteSetting"))
+	inputReadSetting := (ctx.PostForm("inputReadSetting") == "on")
+	inputWriteSetting := (ctx.PostForm("inputWriteSetting") == "on")
 	results += createUser(db, inputName, inputReadSetting, inputWriteSetting)
 
 	// Update the form data
 	handlerLoadData(ctx, results, "views/users.html")
-	// ctx.HTML(http.StatusOK, "views/users.html", gin.H{"users": Users, "results": results})
-	// ctx.Redirect(http.StatusFound, "views/users.html")
 }
 
 // Read Users Handler
@@ -67,8 +92,6 @@ func handlerReadUsers(ctx *gin.Context) {
 
 	// Update the form data
 	handlerLoadData(ctx, results, "views/users.html")
-	// ctx.HTML(http.StatusOK, "views/users.html", gin.H{"users": Users, "results": results})
-	// ctx.Redirect(http.StatusFound, "views/users.html")
 }
 
 // Update User Handler
@@ -78,49 +101,53 @@ func handlerUpdateUser(ctx *gin.Context) {
 
 	// Parse the HTTP Response for Selected User
 	ctx.Request.ParseForm()
-	inputID := ctx.GetInt(ctx.Request.FormValue("selectUser"))
-	inputName := ctx.Request.FormValue("inputName")
-	inputReadSetting := ctx.GetBool(ctx.Request.FormValue("inputReadSetting"))
-	inputWriteSetting := ctx.GetBool(ctx.Request.FormValue("inputWriteSetting"))
+	inputID, err := strconv.Atoi(ctx.Request.FormValue("selectUser"))
+	if err != nil {
+		log.Println("An error occurred when parsing form data.\nGot\n", err)
+	}
+	inputName := ctx.PostForm("inputName")
+	inputReadSetting := (ctx.PostForm("inputReadSetting") == "on")
+	inputWriteSetting := (ctx.PostForm("inputWriteSetting") == "on")
 
 	// Check if Delete Option is Selected
-	switch inputDelete := ctx.GetBool(ctx.Request.FormValue("inputDelete")); inputDelete {
+	switch inputDelete := (ctx.PostForm("inputDelete") == "on"); inputDelete {
 	case true:
+		// Delete the User
 		results += deleteUser(db, inputID)
 	default:
+		// Update the User
 		results += updateUser(db, inputID, inputName, inputReadSetting, inputWriteSetting)
 	}
 
 	// Update the form data
 	handlerLoadData(ctx, results, "views/users.html")
-	// ctx.HTML(http.StatusOK, "views/users.html", gin.H{"users": Users, "results": results})
-	// ctx.Redirect(http.StatusFound, "views/users.html")
 }
 
 // Create Note Handler
 func handlerCreateNote(ctx *gin.Context) {
 	results := ""
 	db := ctx.Value("database").(*sqlx.DB)
+	var err interface{}
 
 	// Parse the HTTP Response for Selected User
 	ctx.Request.ParseForm()
 	inputName := ctx.PostForm("inputName")
 	inputText := ctx.PostForm("inputText")
 	inputStatus := ctx.PostForm("inputStatus")
-	inputDelegation := ctx.GetInt(ctx.PostForm("inputDelegation"))
+	inputDelegation, err := strconv.Atoi(ctx.PostForm("inputDelegation"))
+	if err != nil {
+		log.Println("An error occurred when parsing form data.\nGot\n", err)
+	}
 	inputSharedUsers, err := ctx.GetPostFormArray("inputSharedUsers")
 	if err == false {
 		log.Println("An error occurred when parsing form data.\nGot\n", err)
 	}
-	// Add Commas to the Shared Users Input
+	// Add Formatting to the Shared Users Input
 	sharedUsersString := "[" + strings.Join(inputSharedUsers, `,`) + `]`
 	results += createNote(db, inputName, inputText, inputStatus, inputDelegation, sharedUsersString)
-	log.Println(inputSharedUsers, sharedUsersString)
 
 	// Update the form data
 	handlerLoadData(ctx, results, "views/notes.html")
-	// ctx.HTML(http.StatusOK, "views/notes.html", gin.H{"notes": Notes, "statuses": Statuses, "users": Users, "results": results})
-	// ctx.Redirect(http.StatusFound, "views/notes.html")
 }
 
 // Read Notes Handler
@@ -150,62 +177,41 @@ func handlerReadNotes(ctx *gin.Context) {
 	}
 	// Update the form data
 	handlerLoadData(ctx, results, "views/notes.html")
-	// ctx.HTML(http.StatusOK, "views/notes.html", gin.H{"notes": Notes, "statuses": Statuses, "users": Users, "results": results})
-	// ctx.Redirect(http.StatusFound, "views/notes.html")
 }
 
 // Update Note Handler
 func handlerUpdateNote(ctx *gin.Context) {
 	results := ""
 	db := ctx.Value("database").(*sqlx.DB)
+	var err interface{}
 
-	// Parse the HTTP Response for Selected User
+	// Parse the HTTP Response for Selected Note
 	ctx.Request.ParseForm()
-	inputID := ctx.GetInt(ctx.Request.FormValue("selectNote"))
-	inputName := ctx.Request.FormValue("inputName")
-	inputText := ctx.Request.FormValue("inputText")
-	inputStatus := ctx.Request.FormValue("inputStatus")
-	inputDelegation := ctx.GetInt(ctx.Request.FormValue("inputDelegation"))
-	inputSharedUsers := ctx.Request.FormValue("inputSharedUsers")
+	inputID, err := strconv.Atoi(ctx.Request.FormValue("selectNote"))
+	if err != nil {
+		log.Println("An error occurred when parsing form data.\nGot\n", err)
+	}
+	inputName := ctx.PostForm("inputName")
+	inputText := ctx.PostForm("inputText")
+	inputStatus := ctx.PostForm("inputStatus")
+	inputDelegation := ctx.GetInt(ctx.PostForm("inputDelegation"))
+	inputSharedUsers, err := ctx.GetPostFormArray("inputSharedUsers")
+	if err == false {
+		log.Println("An error occurred when parsing form data.\nGot\n", err)
+	}
+	// Add Formatting to the Shared Users Input
+	sharedUsersString := "[" + strings.Join(inputSharedUsers, `,`) + `]`
 
 	// Check if Delete Option is Selected
-	switch inputDelete := ctx.GetBool(ctx.Request.FormValue("inputDelete")); inputDelete {
+	switch inputDelete := (ctx.PostForm("inputDelete") == "on"); inputDelete {
 	case true:
+		// Delete the Note
 		results += deleteNote(db, inputID)
 	default:
-		results += updateNote(db, inputID, inputName, inputText, inputStatus, inputDelegation, inputSharedUsers)
+		// Update the Note
+		results += updateNote(db, inputID, inputName, inputText, inputStatus, inputDelegation, sharedUsersString)
 	}
 
 	// Update the form data
 	handlerLoadData(ctx, results, "views/notes.html")
-	// ctx.HTML(http.StatusOK, "views/notes.html", gin.H{"notes": Notes, "statuses": Statuses, "users": Users, "results": results})
-	// ctx.Redirect(http.StatusFound, "views/notes.html")
-}
-
-func handlerLoadData(ctx *gin.Context, results string, location string) {
-	db := ctx.Value("database").(*sqlx.DB)
-
-	//type foundUser User
-	foundUsers := []User{}
-	sqlQuery := `SELECT * FROM users;`
-	err := db.Select(&foundUsers, sqlQuery)
-	if err != nil {
-		log.Printf("An error occurred when trying to return data from the users table.\nGot %s\n", err)
-	}
-
-	//type foundNote Note
-	foundNotes := []Note{}
-	sqlQuery = `SELECT * FROM notes;`
-	err = db.Select(&foundNotes, sqlQuery)
-	if err != nil {
-		log.Printf("An error occurred when trying to return data from the notes table.\nGot %s\n", err)
-	}
-
-	if location == "views/users.html" {
-		ctx.HTML(http.StatusOK, "views/users.html", gin.H{"users": foundUsers, "results": results})
-	}
-	if location == "views/notes.html" {
-		ctx.HTML(http.StatusOK, "views/notes.html", gin.H{"notes": foundNotes, "statuses": Statuses, "users": foundUsers, "results": results})
-	}
-	ctx.Redirect(http.StatusFound, location)
 }

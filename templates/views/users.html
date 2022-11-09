@@ -19,7 +19,7 @@
                 <label for="selectUser" class="text-dark">Select a User.</label>
 
               <div class="form-control">
-                <select id="selectUser" name="selectUser">
+                <select id="selectUser" name="selectUser" required>
                   <option class="userName" disabled selected>[SELECT A USER]</option>
                   <option id="showAll" class="noteName" value="all">Show All Users</option>
                   {{ range .users }}
@@ -44,12 +44,12 @@
             <h3 class="text-dark">Edit a User</h3>
             
             <!-- User Select -->
-            <form id="editUserForm" name="editUserForm" action="/users" method="PUT">
+            <form id="editUserForm" name="editUserForm" action="/users/put" method="POST">
               <div class="form-group">
                 <label for="selectUser" class="text-dark">Select a User.</label>
               <div class="form-control">
-                <select id="selectUser" name="selectUser">
-                  <option class="userName" value="" disabled selected>[SELECT A USER]</option>
+                <select id="selectUser" name="selectUser" required>
+                  <option class="userName" disabled selected>[SELECT A USER]</option>
                   {{ range .users }}
                 <option class="userName" value="{{ .ID }}">{{ .ID }}. {{ .Name }}</option>
                 {{ end }}
@@ -80,9 +80,9 @@
           </div>
 
           <!-- Delete User -->
-                <div class="form-control">
+                <div class="form-control" for="inputDelete">
                 <label class="text-danger">[DELETE USER]</label>
-                <input type="checkbox" name="inputDelete" id="inputDelete" action="/users" method="DELETE" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                <input type="checkbox" name="inputDelete" id="inputDelete" onsubmit="return confirm('Are you sure you want to delete this user?');">
               </div>
 
               <!-- Confirm -->

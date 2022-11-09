@@ -61,7 +61,7 @@ func updateUser(db *sqlx.DB, userID int, userName string, userReadSetting bool, 
 		log.Printf("An error occurred when updating the user information.\nGot %s\n", err)
 	}
 
-	returnMsg += "The user information has been successfully updated."
+	returnMsg += fmt.Sprintf("The information for user with ID %d has been successfully updated.", userID)
 	return returnMsg
 }
 
@@ -138,7 +138,7 @@ func updateNote(db *sqlx.DB, noteID int, noteName string, noteText string, noteS
 		log.Printf("An error occurred when updating the note.\nGot %s\n", err)
 	}
 
-	returnMsg += "The note has been successfully updated."
+	returnMsg += fmt.Sprintf("The information for note with ID %d has been successfully updated.", noteID)
 	return returnMsg
 }
 

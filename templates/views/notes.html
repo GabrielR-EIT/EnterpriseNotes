@@ -43,12 +43,12 @@
             <h3 class="text-dark">Edit a Note</h3>
 
             <!-- Note Select -->
-            <form id="editNoteForm" name="editNoteForm" action="/notes" method="PUT">
+            <form id="editNoteForm" name="editNoteForm" action="/notes/put" method="POST">
               <div class="form-group text-lg-left">
                 <label for="selectNote" class="text-dark">Select a Note.</label>
               <div class="form-control">
                 <select id="selectNote" name="selectNote" required>
-                  <option class="noteName" value="" disabled selected>[SELECT A NOTE]</option>
+                  <option class="noteName" disabled selected>[SELECT A NOTE]</option>
                   {{ range .notes }}
                 <option class="noteName" value="{{ .ID }}">{{ .ID }}. {{ .Name }}</option>
                 {{ end }}
@@ -61,7 +61,7 @@
                 <!-- Edit Note Name -->
               <div class="form-control">
                 <label class="text-dark">Name</label>
-                <input id="inputName" name="inputName" pattern="">
+                <input id="inputName" name="inputName">
               </div>
 
               <!-- Edit Note Text -->
@@ -84,7 +84,7 @@
               <div class="form-control">
                 <label class="text-dark">Delegation</label>
                 <select id="inputDelegation" name="inputDelegation">
-                  <option class="userName" value="" disabled selected>[SELECT A USER]</option>
+                  <option class="userName" disabled selected>[SELECT A USER]</option>
                   {{ range .users }}
                   <option class="userName" value="{{ .ID }}" >{{ .ID }}. {{ .Name }}</option>
                   {{ end }}
@@ -104,7 +104,7 @@
               <!-- Delete Note -->
                 <div class="form-control">
                 <label class="text-danger">[DELETE NOTE]</label>
-                <input type="checkbox" name="inputDelete" id="inputDelete" action="/notes" method="DELETE" onsubmit="return confirm('Are you sure you want to delete this note?');">
+                <input type="checkbox" name="inputDelete" id="inputDelete" onsubmit="return confirm('Are you sure you want to delete this note?');">
               </div>
 
               <!-- Confirm -->

@@ -122,7 +122,7 @@ func TestUpdateUser(t *testing.T) {
 	userWriteSetting := true
 
 	got := updateUser(db, 1, userName, userReadSetting, userWriteSetting)
-	want := "The user information has been successfully updated."
+	want := fmt.Sprintf("The information for user with ID 1 has been successfully updated.")
 
 	if got != want {
 		t.Errorf("updateUser() Test: Got %v, wanted %v", got, want)
@@ -262,7 +262,7 @@ func TestUpdateNote(t *testing.T) {
 	noteSharedUsers := "[6, 2]"
 
 	got := updateNote(db, noteID, noteName, noteText, noteStatus, noteDelegation, noteSharedUsers)
-	want := "The user information has been successfully updated."
+	want := fmt.Sprintf("The information for note with ID %d has been successfully updated.", noteID)
 
 	if got != want {
 		t.Errorf("updateNote() Test: Got %v, wanted %v", got, want)
