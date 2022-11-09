@@ -20,7 +20,7 @@
 
               <div class="form-control">
                 <select id="selectUser" name="selectUser">
-                  <option class="userName" value="none" disabled selected>[SELECT A USER]</option>
+                  <option class="userName" disabled selected>[SELECT A USER]</option>
                   <option id="showAll" class="noteName" value="all">Show All Users</option>
                   {{ range .users }}
                 <option class="userName" value="{{ .ID }}">{{ .ID }}. {{ .Name }}</option>

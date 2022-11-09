@@ -20,7 +20,7 @@
 
               <div class="form-control">
                 <select id="selectNote" name="selectNote">
-                  <option class="noteName" value="none" disabled selected>[SELECT A NOTE]</option>
+                  <option class="noteName" disabled selected>[SELECT A NOTE]</option>
                   <option id="showAll" class="noteName" value="all">Show All Notes</option>
                   {{ range .notes }}
                 <option class="noteName" value="{{ .ID }}">{{ .ID }}. {{ .Name }}</option>
