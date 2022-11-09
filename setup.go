@@ -195,12 +195,9 @@ func StartServer(router *gin.Engine, db *sqlx.DB) string {
 	router.LoadHTMLGlob("templates/**/*")
 
 	router.Use(connectDatabase(db))
-	router.GET("/users", func(ctx *gin.Context) {
-		ctx.HTML(http.StatusOK, "views/users.html", gin.H{"users": Users})
-	})
-	router.GET("/notes", handlerReadNotes, func(ctx *gin.Context) {
-		ctx.HTML(http.StatusOK, "views/notes.html", gin.H{"notes": Notes, "statuses": Statuses, "users": Users})
-	})
+	router.GET("/users", handlerReadUsers)
+	router.GET("/notes", handlerReadNotes)
+	// Redirect the user to the Users page
 	router.GET("/", func(ctx *gin.Context) {
 		ctx.Redirect(http.StatusSeeOther, "/users/")
 	})

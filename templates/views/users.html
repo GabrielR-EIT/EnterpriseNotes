@@ -14,14 +14,14 @@
             <h3 class="text-dark">Read a User</h3>
 
             <!-- User Select -->
-            <form id="readUserForm" name="readUserForm" action="/users" target="_self" method="GET">
+            <form id="readUserForm" name="readUserForm" action="/users" method="GET">
               <div class="form-group">
                 <label for="selectUser" class="text-dark">Select a User.</label>
 
               <div class="form-control">
                 <select id="selectUser" name="selectUser">
-                  <option class="userName" value="" disabled selected>[SELECT A USER]</option>
-                  <option class="noteName" value="all">Show All Users</option>
+                  <option class="userName" value="none" disabled selected>[SELECT A USER]</option>
+                  <option id="showAll" class="noteName" value="all">Show All Users</option>
                   {{ range .users }}
                 <option class="userName" value="{{ .ID }}">{{ .ID }}. {{ .Name }}</option>
                 {{ end }}
@@ -44,7 +44,7 @@
             <h3 class="text-dark">Edit a User</h3>
             
             <!-- User Select -->
-            <form id="editUserForm" name="editUserForm" action="/users" target="_self" method="PUT">
+            <form id="editUserForm" name="editUserForm" action="/users" method="PUT">
               <div class="form-group">
                 <label for="selectUser" class="text-dark">Select a User.</label>
               <div class="form-control">
@@ -99,7 +99,7 @@
             
             <h3 class="text-dark">Create a User</h3>
 
-            <form id="createUserForm" name="createUserForm" action="/users" target="_self" method="PUSH">
+            <form id="createUserForm" name="createUserForm" action="/users" method="PUSH">
               <div class="form-group">
                 <label for="editProperties" class="text-dark">Create the User Properties.</label>
 
