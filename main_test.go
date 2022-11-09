@@ -257,12 +257,11 @@ func TestUpdateNote(t *testing.T) {
 	noteID := 1
 	noteName := "updated note"
 	noteText := "updated text"
-	noteCompletionTime := "CURRENT_TIMESTAMP"
 	noteStatus := "in-progress"
 	noteDelegation := 2
 	noteSharedUsers := "[6, 2]"
 
-	got := updateNote(db, noteID, noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers)
+	got := updateNote(db, noteID, noteName, noteText, noteStatus, noteDelegation, noteSharedUsers)
 	want := "The user information has been successfully updated."
 
 	if got != want {

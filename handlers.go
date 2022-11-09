@@ -21,16 +21,6 @@ func connectDatabase(db *sqlx.DB) gin.HandlerFunc {
 	}
 }
 
-// // Return all users as JSON
-// func getUsers(ctx *gin.Context) {
-// 	ctx.IndentedJSON(http.StatusOK, Users)
-// }
-
-// // Return all notes as JSON
-// func getNotes(ctx *gin.Context) {
-// 	ctx.IndentedJSON(http.StatusOK, Notes)
-// }
-
 // Create User Handler
 func handlerCreateUser(ctx *gin.Context) {
 	results := ""
@@ -42,6 +32,7 @@ func handlerCreateUser(ctx *gin.Context) {
 	inputReadSetting := ctx.GetBool(ctx.PostForm("inputReadSetting"))
 	inputWriteSetting := ctx.GetBool(ctx.PostForm("inputWriteSetting"))
 	results += createUser(db, inputName, inputReadSetting, inputWriteSetting)
+
 	// Update the form data
 	ctx.HTML(http.StatusOK, "views/users.html", gin.H{"users": Users, "results": results})
 	ctx.Redirect(http.StatusFound, "views/users.html")
@@ -60,9 +51,10 @@ func handlerCreateNote(ctx *gin.Context) {
 	inputDelegation := ctx.GetInt(ctx.PostForm("inputDelegation"))
 	inputSharedUsers := ctx.PostForm("inputSharedUsers")
 	results += createNote(db, inputName, inputText, inputStatus, inputDelegation, inputSharedUsers)
+
 	// Update the form data
-	ctx.HTML(http.StatusOK, "views/users.html", gin.H{"users": Users, "results": results})
-	ctx.Redirect(http.StatusFound, "views/users.html")
+	ctx.HTML(http.StatusOK, "views/notes.html", gin.H{"notes": Notes, "statuses": Statuses, "users": Users, "results": results})
+	ctx.Redirect(http.StatusFound, "views/notes.html")
 }
 
 // Read Users Handler
@@ -89,9 +81,62 @@ func handlerReadUsers(ctx *gin.Context) {
 			results += readUser(db, userID)
 		}
 	}
+
 	// Update the form data
 	ctx.HTML(http.StatusOK, "views/users.html", gin.H{"users": Users, "results": results})
 	ctx.Redirect(http.StatusFound, "views/users.html")
+}
+
+// Update User Handler
+func handlerUpdateUser(ctx *gin.Context) {
+	results := ""
+	db := ctx.Value("database").(*sqlx.DB)
+
+	// Parse the HTTP Response for Selected User
+	ctx.Request.ParseForm()
+	inputID := ctx.GetInt(ctx.Request.FormValue("selectUser"))
+	inputName := ctx.Request.FormValue("inputName")
+	inputReadSetting := ctx.GetBool(ctx.Request.FormValue("inputReadSetting"))
+	inputWriteSetting := ctx.GetBool(ctx.Request.FormValue("inputWriteSetting"))
+
+	// Check if Delete Option is Selected
+	switch inputDelete := ctx.GetBool(ctx.Request.FormValue("inputDelete")); inputDelete {
+	case true:
+		results += deleteUser(db, inputID)
+	default:
+		results += updateUser(db, inputID, inputName, inputReadSetting, inputWriteSetting)
+	}
+
+	// Update the form data
+	ctx.HTML(http.StatusOK, "views/users.html", gin.H{"users": Users, "results": results})
+	ctx.Redirect(http.StatusFound, "views/users.html")
+}
+
+// Update Note Handler
+func handlerUpdateNote(ctx *gin.Context) {
+	results := ""
+	db := ctx.Value("database").(*sqlx.DB)
+
+	// Parse the HTTP Response for Selected User
+	ctx.Request.ParseForm()
+	inputID := ctx.GetInt(ctx.Request.FormValue("selectNote"))
+	inputName := ctx.Request.FormValue("inputName")
+	inputText := ctx.Request.FormValue("inputText")
+	inputStatus := ctx.Request.FormValue("inputStatus")
+	inputDelegation := ctx.GetInt(ctx.Request.FormValue("inputDelegation"))
+	inputSharedUsers := ctx.Request.FormValue("inputSharedUsers")
+
+	// Check if Delete Option is Selected
+	switch inputDelete := ctx.GetBool(ctx.Request.FormValue("inputDelete")); inputDelete {
+	case true:
+		results += deleteNote(db, inputID)
+	default:
+		results += updateNote(db, inputID, inputName, inputText, inputStatus, inputDelegation, inputSharedUsers)
+	}
+
+	// Update the form data
+	ctx.HTML(http.StatusOK, "views/notes.html", gin.H{"notes": Notes, "statuses": Statuses, "users": Users, "results": results})
+	ctx.Redirect(http.StatusFound, "views/notes.html")
 }
 
 // Read Notes Handler
@@ -102,6 +147,7 @@ func handlerReadNotes(ctx *gin.Context) {
 	// Parse the HTTP Response for Selected Note
 	ctx.Request.ParseForm()
 	noteID := ctx.Request.FormValue("selectNote")
+
 	// Check if a note has been selected
 	if noteID != "" {
 		// Read all notes

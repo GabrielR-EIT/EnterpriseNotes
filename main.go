@@ -86,7 +86,7 @@ func deleteUser(db *sqlx.DB, userID int) string {
 func createNote(db *sqlx.DB, noteName string, noteText string, noteStatus string, noteDelegation int, noteSharedUsers string) string {
 	returnMsg := ""
 
-	sqlQuery := fmt.Sprintf(`INSERT INTO notes(noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers) VALUES ('%s', '%s', NOW(), '%s', %d, ARRAY%s)`, noteName, noteText, noteStatus, noteDelegation, noteSharedUsers)
+	sqlQuery := fmt.Sprintf(`INSERT INTO notes(noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers) VALUES ('%s', '%s', CURRENT_TIMESTAMP, '%s', %d, ARRAY%s)`, noteName, noteText, noteStatus, noteDelegation, noteSharedUsers)
 	_, err := db.Exec(sqlQuery)
 	if err != nil {
 		log.Println("An error occurred when creating a new note.\nGot\n", err)
@@ -129,10 +129,10 @@ func readNote(db *sqlx.DB, noteID int) string {
 }
 
 // Update Note Function
-func updateNote(db *sqlx.DB, noteID int, noteName string, noteText string, noteCompletionTime string, noteStatus string, noteDelegation int, noteSharedUsers string) string {
+func updateNote(db *sqlx.DB, noteID int, noteName string, noteText string, noteStatus string, noteDelegation int, noteSharedUsers string) string {
 	returnMsg := ""
 
-	sqlQuery := fmt.Sprintf(`UPDATE notes SET noteName = '%s', noteText = '%s', noteCompletionTime = '%s', noteStatus = '%s', noteDelegation = %d, noteSharedUsers = ARRAY%s WHERE noteID = %d`, noteName, noteText, noteCompletionTime, noteStatus, noteDelegation, noteSharedUsers, noteID)
+	sqlQuery := fmt.Sprintf(`UPDATE notes SET noteName = '%s', noteText = '%s', noteStatus = '%s', noteDelegation = %d, noteSharedUsers = ARRAY%s WHERE noteID = %d`, noteName, noteText, noteStatus, noteDelegation, noteSharedUsers, noteID)
 	_, err := db.Exec(sqlQuery)
 	if err != nil {
 		log.Printf("An error occurred when updating the note.\nGot %s\n", err)
