@@ -19,7 +19,7 @@
                 <label for="selectNote" class="text-dark">Select a Note.</label>
 
               <div class="form-control">
-                <select id="selectNote" name="selectNote">
+                <select id="selectNote" name="selectNote" required>
                   <option class="noteName" disabled selected>[SELECT A NOTE]</option>
                   <option id="showAll" class="noteName" value="all">Show All Notes</option>
                   {{ range .notes }}
@@ -47,7 +47,7 @@
               <div class="form-group text-lg-left">
                 <label for="selectNote" class="text-dark">Select a Note.</label>
               <div class="form-control">
-                <select id="selectNote" name="selectNote">
+                <select id="selectNote" name="selectNote" required>
                   <option class="noteName" value="" disabled selected>[SELECT A NOTE]</option>
                   {{ range .notes }}
                 <option class="noteName" value="{{ .ID }}">{{ .ID }}. {{ .Name }}</option>
@@ -146,7 +146,7 @@
 
               <div class="form-control">
                 <label class="text-dark">Delegation</label>
-                <select id="inputDelegation" name="inputDelegation">
+                <select id="inputDelegation" name="inputDelegation" required>
                   <option class="userName" value="" disabled selected>[SELECT A USER]</option>
                   {{ range .users }}
                   <option class="userName" value="{{ .ID }}">{{ .ID }}. {{ .Name }}</option>
